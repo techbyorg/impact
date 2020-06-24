@@ -1,0 +1,1 @@
+/[\\/]node_modules[\\/](?!(frontend-dev-shared|assert-none-missing|exoid|location-router|lodash-es|normalize-styl|portal-gun|zorium)[\\/])/

@@ -1,0 +1,3 @@
+[submodule "frontend-shared"]
+	path = frontend-shared
+	url = git@github.com:techbyorg/frontend-shared.git
