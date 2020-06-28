@@ -1,3 +1,20 @@
 @require '../../vars'
 
-// .z-home
+$maxColumns = 3
+$columnMin = 320px
+
+.z-home
+  flex1()
+  background: getColor('$bgColorAlt1')
+  width: 100%
+
+  > .metrics
+    // https://stackoverflow.com/a/54907809
+    // max 3 columns, but if they get smaller than $columnMin, reduce # of cols
+    @media (min-width: $columnMin * $maxColumns)
+      --repeat: $maxColumns
+
+    display: grid
+    grid-template-columns: repeat(var(--repeat, auto-fit), minmax($columnMin , 1fr))
+    grid-gap: 20px
+    padding: 20px

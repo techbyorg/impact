@@ -183,6 +183,7 @@ var colors = _.defaults({
   $white: $white,
   $red500: '#F44336',
   $amber500: '#FFC107',
+  $graphTooltipBg: '#454545',
 
   getRawColor (color) {
     let matches
