@@ -1,0 +1,79 @@
+@require '../../vars'
+
+$maxColumns = 2
+$columnMin = 320px
+
+.z-dashboard
+  flex1()
+  background: getColor('$bgColorAlt1')
+  display: grid
+  grid-template-columns: 280px 1fr
+
+  > .menu
+    background: getColor('$bgColor')
+    padding: 32px 12px
+    border-right: 1px solid getColor('$bgText12')
+
+    > .logo
+      font-h5()
+      color: getColor('$upchieve500') // FIXME
+      margin: 0 12px
+
+      > .data
+        color: getColor('$bgText54')
+
+    > .title
+      font-h6()
+      margin: 48px 12px 0 12px
+
+    > .dashboards
+      margin-top: 24px
+
+      > .dashboard
+        font-body2()
+        padding: 12px
+        display: block
+        border-radius: 6px
+
+        &:hover
+          background: getColor('$bgColorAlt1')
+
+        &.is-selected
+          font-subtitle2()
+          background: getColor('$upchieve5008')
+          color: getColor('$upchieve500')
+
+  > .content
+
+    > .top
+      padding: 24px 30px
+      background: getColor('$bgColor')
+      border-bottom: 1px solid getColor('$bgText12')
+
+      > .sup
+        font-subtitle2(medium)
+
+      > .name
+        font-h6()
+
+    > .filters
+      padding: 32px 32px 0 32px
+      display: flex
+
+      > .time-scale
+        margin-left: 20px
+
+    > .data
+      padding: 32px
+      // overflow-y: auto
+      // -webkit-overflow-scrolling: touch
+
+      > .blocks
+        // https://stackoverflow.com/a/54907809
+        // max 3 columns, but if they get smaller than $columnMin, reduce # of cols
+        @media (min-width: $columnMin * $maxColumns)
+          --repeat: $maxColumns
+
+        display: grid
+        grid-template-columns: repeat(var(--repeat, auto-fit), minmax($columnMin , 1fr))
+        grid-gap: 20px

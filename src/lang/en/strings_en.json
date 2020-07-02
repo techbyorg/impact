@@ -1,4 +1,11 @@
 {
-  "homePage.title": "Impact by TechBy",
+  "general.dashboard": "Dashboard",
+  "general.dashboards": "Dashboards",
+  "general.overview": "Overview",
+  "frequencies.day": "Day",
+  "frequencies.week": "Week",
+  "frequencies.month": "Month",
+
+  "homePage.title": "Impact",
   "homePage.description": "Nonprofit impact measured"
 }

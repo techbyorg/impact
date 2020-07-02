@@ -185,6 +185,9 @@ var colors = _.defaults({
   $amber500: '#FFC107',
   $graphTooltipBg: '#454545',
 
+  $upchieve500: '#16d2aa', // FIXME
+  $upchieve5008: 'rgba(22, 210, 170, 0.08)', // FIXME
+
   getRawColor (color) {
     let matches
     if ((typeof color === 'string') && (matches = color.match(/\(([^)]+)\)/))) {
