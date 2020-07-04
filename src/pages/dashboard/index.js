@@ -1,5 +1,4 @@
 import { z, useContext, useMemo } from 'zorium'
-import * as _ from 'lodash'
 import * as Rx from 'rxjs'
 import * as rx from 'rxjs/operators'
 

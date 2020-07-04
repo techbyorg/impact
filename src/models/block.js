@@ -10,11 +10,17 @@ export default class Block {
         query BlocksByDashboardId($dashboardId: ID!, $startDate: String, $endDate: String, $timeScale: String) {
           blocks(dashboardId: $dashboardId) {
             nodes {
-              name, settings, metrics {
+              id, name, settings, metrics {
                 nodes {
                   name,
-                  datapoints(startDate: $startDate, endDate: $endDate, timeScale: $timeScale) {
-                    nodes { scaledTime, count }
+                  unit,
+                  dimensions {
+                    nodes {
+                      slug,
+                      datapoints(startDate: $startDate, endDate: $endDate, timeScale: $timeScale) {
+                        nodes { scaledTime, dimensionValue, count }
+                      }
+                    }
                   }
                 }
               }

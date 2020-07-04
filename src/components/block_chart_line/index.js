@@ -1,5 +1,5 @@
-import { z } from 'zorium'
-import * as _ from 'lodash'
+import { z, useMemo } from 'zorium'
+import * as _ from 'lodash-es'
 
 import $chartLine from 'frontend-shared/components/chart_line'
 import DateService from 'frontend-shared/services/date'
@@ -13,23 +13,36 @@ const SCALES = {
 }
 
 export default function $blockChartLine ({ timeScale, block, colors }) {
-  // TODO: useMemo?
-  const data = [{
-    id: 'main',
-    data: _.map(block.metrics.nodes[0].datapoints.nodes, ({ scaledTime, count }) => {
-      const time = DateService.scaledTimeToUTC(scaledTime)
+  const data = useMemo(() => {
+    const metric = block.metrics.nodes[0]
+    const dimension = metric.dimensions.nodes[0]
+    const dimensionValues = _.groupBy(
+      dimension.datapoints.nodes, 'dimensionValue'
+    )
+    return _.map(dimensionValues, (datapoints, dimensionValue) => ({
+      id: dimensionValue,
+      data: _.map(datapoints, ({ scaledTime, count }) => {
+        const time = DateService.scaledTimeToUTC(scaledTime)
 
-      return { x: time, y: count || 0 }
-    })
-  }]
+        if (metric.unit === 'second') {
+          count = DateService.secondsToMinutes(count)
+        }
+
+        return { x: time, y: count || 0 }
+      })
+    }))
+  })
+
+  console.log('line', data)
 
   const scale = SCALES[timeScale]
-  const xCount = data[0].data.length
+  const xCount = data[0]?.data.length || 0
   const xTicksCount = Math.min(xCount, 4)
   const xTickFreq = Math.round(xCount / xTicksCount)
 
   return z('.z-block-chart-line', [
     z($chartLine, {
+      key: block.id,
       data,
       chartOptions: {
         colors,
@@ -37,7 +50,7 @@ export default function $blockChartLine ({ timeScale, block, colors }) {
         pointSize: 0,
         lineWidth: 3,
         margin: {
-          left: 30
+          left: 40
         },
         xScale: {
           type: 'time',

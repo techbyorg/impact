@@ -1,23 +1,25 @@
 import { z } from 'zorium'
 import * as _ from 'lodash-es'
 
-import $chartUsMap from 'frontend-shared/components/chart_us_map'
+import $chartPie from 'frontend-shared/components/chart_pie'
 
 if (typeof window !== 'undefined') { require('./index.styl') }
 
-export default function $blockChartMap ({ block, colors }) {
+export default function $blockChartPie ({ block, colors }) {
   const dimensions = block.metrics.nodes[0].dimensions.nodes
+  console.log('dim', dimensions)
   const data = _.map(
     dimensions[0].datapoints.nodes,
     ({ dimensionValue, count }) => ({ id: dimensionValue, value: count })
   )
 
-  return z('.z-block-chart-map', [
-    z('.map', [
-      z($chartUsMap, {
-        key: block.id,
-        data
-      })
-    ])
+  console.log('data', data)
+
+  return z('.z-block-chart-pie', [
+    z($chartPie, {
+      key: block.id,
+      data,
+      colors
+    })
   ])
 }

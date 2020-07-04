@@ -210,3 +210,15 @@ if (typeof window !== 'undefined') {
 }
 
 export default colors
+
+export const graphColors = [
+  { bg: '#e0e1ee', fg: '#1a2380', graph: '#1a2380' },
+  { bg: '#fee6dc', fg: '#e84200', graph: '#fd6326' },
+  { bg: '#edf3e1', fg: '#6d9a1a', graph: '#b1ce4d' },
+  { bg: '#ece2f6', fg: '#7d3ac0', graph: '#7d3ac0' },
+  { bg: '#ddf6f6', fg: '#039593', graph: '#1ce5bd' },
+  { bg: '#def0f6', fg: '#1395c3', graph: '#1aabdd' },
+  { bg: '#fde3f0', fg: '#dc3789', graph: '#f954a6' },
+  { bg: '#fddddd', fg: '#ed0d10', graph: '#ed425c' },
+  { bg: '#faf1e2', fg: '#d39218', graph: '#ffbf48' }
+]

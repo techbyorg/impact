@@ -1,26 +1,29 @@
 import { z, classKebab, useContext, useMemo, useStream } from 'zorium'
-import * as _ from 'lodash'
+import * as _ from 'lodash-es'
 import * as Rx from 'rxjs'
 import * as rx from 'rxjs/operators'
 
 import $dropdown from 'frontend-shared/components/dropdown'
 import $inputDateRange from 'frontend-shared/components/input_date_range'
+import $masonryGrid from 'frontend-shared/components/masonry_grid'
+import $spinner from 'frontend-shared/components/spinner'
 import DateService from 'frontend-shared/services/date'
 
 import $block from '../block'
+import { graphColors } from '../../colors'
 import context from '../../context'
 
 if (typeof window !== 'undefined') { require('./index.styl') }
 
-const ONE_WEEK_MS = 3600 * 24 * 7 * 1000
+const SIX_MONTHS_MS = 3600 * 24 * 30 * 6 * 1000
 
 export default function $home (props) {
   const { orgStream, dashboardSlugStream, dashboardStream } = props
   const { model, lang, colors, router } = useContext(context)
 
   const {
-    startDateStream, endDateStream, timeScaleValueStream,
-    dashboardsStream, blocksStream
+    startDateStream, endDateStream, timeScaleValueStream, gColors,
+    isMenuVisibleStream, isLoadingStream, dashboardsStream, blocksStream
   } = useMemo(() => {
     // TODO: get from url. broken with preact (rerender suspense bug)
     // https://github.com/preactjs/preact/pull/2570
@@ -30,12 +33,12 @@ export default function $home (props) {
     // endDateStreams.next(Rx.of(Date.now()))
 
     const startDateStream = new Rx.BehaviorSubject(
-      DateService.format(new Date(Date.now() - ONE_WEEK_MS), 'yyyy-mm-dd')
+      DateService.format(new Date(Date.now() - SIX_MONTHS_MS), 'yyyy-mm-dd')
     )
     const endDateStream = new Rx.BehaviorSubject(
       DateService.format(new Date(), 'yyyy-mm-dd')
     )
-    const timeScaleValueStream = new Rx.BehaviorSubject('day')
+    const timeScaleValueStream = new Rx.BehaviorSubject('month')
 
     const datesAndDashboardStream = Rx.combineLatest(
       startDateStream,
@@ -48,34 +51,51 @@ export default function $home (props) {
       startDateStream,
       endDateStream,
       timeScaleValueStream,
+      gColors: _.map(graphColors, 'graph'),
+      isMenuVisibleStream: new Rx.BehaviorSubject(false),
+      isLoadingStream: new Rx.BehaviorSubject(false),
       dashboardsStream: orgStream.pipe(
         rx.switchMap((org) => model.dashboard.getAllByOrgId(org.id))
       ),
       blocksStream: datesAndDashboardStream.pipe(
+        rx.tap(() => { isLoadingStream.next(true) }),
         rx.filter(([startDate, endDate, dashboard]) => startDate && endDate),
         rx.switchMap(([startDate, endDate, timeScale, dashboard]) => {
           console.log('get', dashboard, startDate, endDate)
           return model.block.getAllByDashboardId(dashboard.id, {
             startDate, endDate, timeScale
           })
-        })
+        }),
+        rx.tap(() => { isLoadingStream.next(false) })
       )
     }
   }, [])
 
   const {
-    dashboard, dashboardSlug, dashboards, blocks, timeScale
+    isMenuVisible, isLoading, dashboard, dashboardSlug, dashboards, blocks,
+    pinnedBlock, timeScale
   } = useStream(() => ({
+    isMenuVisible: isMenuVisibleStream,
+    isLoading: isLoadingStream,
     dashboard: dashboardStream,
     dashboardSlug: dashboardSlugStream,
     dashboards: dashboardsStream,
-    blocks: blocksStream,
+    blocks: blocksStream.pipe(
+      rx.map((blocks) =>
+        _.filter(blocks.nodes, ({ settings }) => !settings?.isPinned)
+      )
+    ),
+    pinnedBlock: blocksStream.pipe(
+      rx.map((blocks) => _.find(blocks.nodes, ({ settings }) => settings?.isPinned))
+    ),
     timeScale: timeScaleValueStream
   }))
 
-  console.log('dash', dashboard, blocks)
+  console.log('dash', dashboard, blocks, pinnedBlock)
 
-  return z('.z-dashboard', [
+  return z('.z-dashboard', {
+    className: classKebab({ isMenuVisible })
+  }, [
     z('.menu', [
       z('.logo', [
         'UPchieve',
@@ -95,9 +115,14 @@ export default function $home (props) {
       ))
     ]),
     z('.content', [
-      z('.top', [
+      z('.top', {
+        onclick: () => { isMenuVisibleStream.next(!isMenuVisible) }
+      }, [
         z('.sup', lang.get('general.dashboard') + ':'),
-        z('.name', dashboard?.name)
+        z('.name', [
+          dashboard?.name,
+          z('.arrow')
+        ])
       ]),
       z('.filters', [
         // select
@@ -113,16 +138,38 @@ export default function $home (props) {
               { value: 'month', text: lang.get('frequencies.month') }
             ]
           })
-        ])
+        ]),
+        isLoading && z('.spinner', z($spinner, { size: 30 }))
       ]),
       z('.data', [
+        pinnedBlock && z('.pinned-block', [
+          z($block, {
+            timeScale,
+            block: pinnedBlock,
+            colors: [colors.$upchieve500].concat(gColors)
+          })
+        ]),
         z('.blocks',
-          _.map(blocks?.nodes, (block) => {
-            return z('.block', [
-              z($block, {
-                timeScale, block, colors: [colors.$upchieve500]
-              })
-            ])
+          z($masonryGrid, {
+            columnCounts: {
+              mobile: 1,
+              tablet: 1,
+              desktop: 2
+            },
+            columnGapPxs: {
+              mobile: 0,
+              tablet: 0,
+              desktop: 20
+            },
+            $elements: _.map(blocks, (block) => {
+              return z('.block', [
+                z($block, {
+                  timeScale,
+                  block,
+                  colors: [colors.$upchieve500].concat(gColors)
+                })
+              ])
+            })
           })
         )
       ])
