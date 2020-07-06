@@ -32,17 +32,20 @@ export default function $blockChartBar ({ block, colors }) {
     return { data, marginLeft }
   })
 
+  console.log('bar data', data)
+
   return z('.z-block-chart-bar', [
-    z($chartBar, {
-      key: block.id,
-      data,
-      chartOptions: {
-        colors,
-        layout: 'horizontal',
-        margin: {
-          left: marginLeft
+    !_.isEmpty(data) &&
+      z($chartBar, {
+        key: block.id,
+        data,
+        chartOptions: {
+          colors,
+          layout: 'horizontal',
+          margin: {
+            left: marginLeft
+          }
         }
-      }
-    })
+      })
   ])
 }

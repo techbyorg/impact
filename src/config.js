@@ -9,7 +9,7 @@ let API_HOST, API_PATH, config
 // Don't let server environment variables leak into client code
 const serverEnv = process.env
 
-const HOST = process.env.TECH_BY_HOST || '127.0.0.1'
+const HOST = process.env.IMPACT_HOST || '127.0.0.1'
 const HOSTNAME = HOST.split(':')[0]
 
 const API_URL =
@@ -76,7 +76,7 @@ const isomorphic = {
 
 // Server only
 // All keys must have values at run-time (value may be null)
-const PORT = serverEnv.TECH_BY_PORT || 3000
+const PORT = serverEnv.IMPACT_PORT || 3000
 const WEBPACK_DEV_PORT = serverEnv.WEBPACK_DEV_PORT || (parseInt(PORT) + 1)
 const WEBPACK_DEV_PROTOCOL = DEV_USE_HTTPS ? 'https://' : 'http://'
 
