@@ -1,7 +1,9 @@
 {
   "general.dashboard": "Dashboard",
   "general.dashboards": "Dashboards",
+  "general.donate": "Donate",
   "general.overview": "Overview",
+  "dashboard.donateText": "Help us grow",
   "frequencies.day": "Day",
   "frequencies.week": "Week",
   "frequencies.month": "Month",

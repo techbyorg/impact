@@ -3,6 +3,7 @@ import * as _ from 'lodash-es'
 import * as Rx from 'rxjs'
 import * as rx from 'rxjs/operators'
 
+import $button from 'frontend-shared/components/button'
 import $dropdown from 'frontend-shared/components/dropdown'
 import $inputDateRange from 'frontend-shared/components/input_date_range'
 import $masonryGrid from 'frontend-shared/components/masonry_grid'
@@ -104,7 +105,10 @@ export default function $home (props) {
         'UPchieve',
         z('span.data', 'Data')
       ]),
-      z('.title', lang.get('general.dashboards')),
+      z('.title', [
+        z('.icon'),
+        lang.get('general.dashboards')
+      ]),
       z('.dashboards', _.map(dashboards?.nodes, ({ slug, name }) =>
         router.link(z('a.dashboard', {
           className: classKebab({
@@ -115,7 +119,21 @@ export default function $home (props) {
             dashboardSlug: slug
           })
         }, name))
-      ))
+      )),
+      z('.donate', [
+        z('.image'),
+        z('.text', lang.get('dashboard.donateText')),
+        z('.button', [
+          z($button, {
+            text: lang.get('general.donate'),
+            isPrimary: true,
+            isFullWidth: false,
+            onclick: () => {
+              router.openLink('https://secure.givelively.org/donate/upchieve')
+            }
+          })
+        ])
+      ])
     ]),
     z('.content', [
       z('.top', {
@@ -127,29 +145,29 @@ export default function $home (props) {
           z('.arrow')
         ])
       ]),
-      z('.filters', [
-        // select
-        z('.date-range', [
-          z($inputDateRange, { startDateStream, endDateStream })
-        ]),
-        z('.time-scale', [
-          z($dropdown, {
-            valueStream: timeScaleValueStream,
-            options: [
-              { value: 'day', text: lang.get('frequencies.day') },
-              { value: 'week', text: lang.get('frequencies.week') },
-              { value: 'month', text: lang.get('frequencies.month') }
-            ]
-          })
-        ]),
-        isLoading && z('.spinner', z($spinner, { size: 30 }))
-      ]),
       z('.data', [
+        z('.filters', [
+          // select
+          z('.date-range', [
+            z($inputDateRange, { startDateStream, endDateStream })
+          ]),
+          z('.time-scale', [
+            z($dropdown, {
+              valueStream: timeScaleValueStream,
+              options: [
+                { value: 'day', text: lang.get('frequencies.day') },
+                { value: 'week', text: lang.get('frequencies.week') },
+                { value: 'month', text: lang.get('frequencies.month') }
+              ]
+            })
+          ]),
+          isLoading && z('.spinner', z($spinner, { size: 30 }))
+        ]),
         pinnedBlock && z('.pinned-block', [
           z($block, {
             timeScale,
             block: pinnedBlock,
-            colors: [colors.$upchieve500].concat(gColors)
+            colors: [colors.getRawColor(colors.$primaryMain)].concat(gColors)
           })
         ]),
         z('.blocks',
@@ -169,7 +187,7 @@ export default function $home (props) {
                 z($block, {
                   timeScale,
                   block,
-                  colors: [colors.$upchieve500].concat(gColors)
+                  colors: [colors.getRawColor(colors.$primaryMain)].concat(gColors)
                 })
               ])
             })

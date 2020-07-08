@@ -6,6 +6,7 @@ import $chartPie from 'frontend-shared/components/chart_pie'
 if (typeof window !== 'undefined') { require('./index.styl') }
 
 export default function $blockChartPie ({ block, colors }) {
+  colors = colors.splice(1) // don't use branded color
   const dimensions = block.metrics.nodes[0].dimensions.nodes
   const data = useMemo(() => {
     const datapoints = _.orderBy(
@@ -16,7 +17,7 @@ export default function $blockChartPie ({ block, colors }) {
       id: dimensionValue,
       value: count,
       percent: 100 * count / sum,
-      color: colors[i]
+      color: colors[i % colors.length]
     }))
   }, [])
 

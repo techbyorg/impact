@@ -1,5 +1,7 @@
 import * as _ from 'lodash-es'
 
+import { getRawColor } from 'frontend-shared/services/use_css_variables'
+
 const $black12 = 'rgba(0, 0, 0, 0.12)'
 const $black26 = 'rgba(0, 0, 0, 0.26)'
 const $black54 = 'rgba(0, 0, 0, 0.54)'
@@ -22,6 +24,8 @@ var colors = _.defaults({
     '--primary-300': '#7764B0',
     '--primary-400': '#59439F',
     '--primary-500': '#3C228E',
+    '--primary-main': '#3C228E',
+    '--primary-main-8': 'rgba(28, 11, 81, 0.08)',
     '--primary-600': '#361E86',
     '--primary-700': '#2E197B',
     '--primary-800': '#271471',
@@ -32,6 +36,7 @@ var colors = _.defaults({
     '--primary-300-text': '#FAFAFA',
     '--primary-400-text': '#FAFAFA',
     '--primary-500-text': '#FAFAFA',
+    '--primary-main-text': '#FAFAFA',
     '--primary-600-text': '#FAFAFA',
     '--primary-700-text': '#FAFAFA',
     '--primary-800-text': '#FAFAFA',
@@ -95,7 +100,8 @@ var colors = _.defaults({
   $primary800: 'var(--primary-800)',
   $primary900: 'var(--primary-900)',
   $primary90054: 'var(--primary-900-54)',
-  $primaryMain: 'var(--primary-500)',
+  $primaryMain: 'var(--primary-main)',
+  $primaryMain8: 'var(--primary-main-8)',
 
   $primary100Text: 'var(--primary-100-text)',
   $primary200Text: 'var(--primary-200-text)',
@@ -185,13 +191,11 @@ var colors = _.defaults({
   $amber500: '#FFC107',
   $graphTooltipBg: '#454545',
 
-  $upchieve500: '#16d2aa', // FIXME
-  $upchieve5008: 'rgba(22, 210, 170, 0.08)', // FIXME
-
   getRawColor (color) {
     let matches
     if ((typeof color === 'string') && (matches = color.match(/\(([^)]+)\)/))) {
-      return colors.default[matches[1]]
+      const cssVariable = matches[1]
+      return getRawColor(cssVariable) || colors.default[cssVariable]
     } else {
       return color
     }

@@ -2,11 +2,10 @@
 
 $maxColumns = 2
 $columnMin = 320px
+$pinnedBlockWidth = 300px
 
 .z-dashboard
   flex1()
-  overflow: auto
-  -webkit-overflow-scrolling: touch
   background: getColor('$bgColorAlt1')
 
   &.is-menu-visible
@@ -21,11 +20,13 @@ $columnMin = 320px
     background: getColor('$bgColor')
     padding: 16px 16px 0 16px
     border-right: 1px solid getColor('$bgText12')
+    display: flex
+    flex-direction: column
 
     > .logo
       font-h4()
       font-weight: 700
-      color: getColor('$upchieve500') // FIXME
+      color: getColor('$primaryMain') // FIXME
       margin: 0 12px
 
       > .data
@@ -35,6 +36,13 @@ $columnMin = 320px
       font-h5()
       margin: 48px 12px 0 12px
       display: none
+
+      > .icon
+        width: 22px
+        height: 21px
+        background: url($cdnUrl + '/techby/impact/chart.svg')
+        margin-right: 12px
+        margin-top: 2px
 
     > .dashboards
       margin-top: 24px
@@ -50,11 +58,31 @@ $columnMin = 320px
           background: getColor('$bgColorAlt1')
 
         &.is-selected
-          background: getColor('$upchieve5008')
-          color: getColor('$upchieve500')
+          background: getColor('$primaryMain8')
+          color: getColor('$primaryMain')
+
+    > .donate
+      display: none
+      margin-top: auto
+      padding: 0 24px 24px 24px
+      background: getColor('$bgColorAlt1')
+      border: 1px solid getColor('$bgText12')
+      border-radius: 20px
+      text-align: center
+      overflow: hidden
+
+      > .image
+        width: 109px
+        height: 132px
+        background: url($cdnUrl + '/techby/impact/donate.svg')
+        margin: -4px auto 0 auto
+
+      > .text
+        font-subtitle1(medium)
+        margin-top: 20px
+        margin-bottom: 20px
 
   > .content
-
     > .top
       padding: 24px 30px
       background: getColor('$bgColor')
@@ -79,20 +107,19 @@ $columnMin = 320px
           border-right: 5px solid transparent
           border-top: 5px solid getColor('$primaryMain')
 
-
-    > .filters
-      padding: 32px 32px 0 32px
-
-      > .time-scale
-        display: inline-block
-        margin-top: 16px
-
-      > .spinner
-        margin-left: 24px
-        margin-top: 4px
-
     > .data
       padding: 32px
+
+      > .filters
+        > .time-scale
+          display: inline-block
+          margin-top: 16px
+
+        > .spinner
+          margin-left: 24px
+          margin-top: 4px
+
+        margin-bottom: 32px
 
       > .pinned-block
         margin-bottom: 16px
@@ -115,34 +142,48 @@ $columnMin = 320px
       padding: 32px 12px
 
       > .title
-        display: block
+        display: flex
 
       > .dashboards
         display: block
 
+      > .donate
+        display: block
+
     > .content
+      min-height: 0
+      display: flex
+      flex-direction: column
+
       > .top
         > .name
           > .arrow
             display: none
 
-      > .filters
-        display: flex
-
-        > .time-scale
-          margin-top: 0
-          margin-left: 20px
-
-
       > .data
-        display: flex
-        flex-direction: row-reverse
+        display: grid
+        grid-template: 'filters filters' 'blocks pinned-block' 'blocks .'
+        grid-template-columns: 1fr $pinnedBlockWidth
+        grid-column-gap: 32px
+        overflow: auto
+        -webkit-overflow-scrolling: touch
+
+        > .filters
+          grid-area: filters
+          display: flex
+
+          > .time-scale
+            margin-top: 0
+            margin-left: 20px
 
         > .pinned-block
-          width: 300px
-          margin-left: 32px
+          grid-area: pinned-block
+          position: sticky
+          top: 0
+          width: $pinnedBlockWidth
           margin-bottom: 0
 
         > .blocks
-          flex1()
+          // flex1()
+          grid-area: blocks
 
