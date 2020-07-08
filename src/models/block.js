@@ -7,18 +7,34 @@ export default class Block {
   getAllByDashboardId (dashboardId, { startDate, endDate, timeScale }) {
     return this.auth.stream({
       query: `
-        query BlocksByDashboardId($dashboardId: ID!, $startDate: String, $endDate: String, $timeScale: String) {
+        query BlocksByDashboardId(
+          $dashboardId: ID!
+          $startDate: String
+          $endDate: String
+          $timeScale: String
+        ) {
           blocks(dashboardId: $dashboardId) {
             nodes {
-              id, name, settings, metrics {
+              id
+              name
+              settings
+              metrics {
                 nodes {
-                  name,
-                  unit,
+                  name
+                  unit
                   dimensions {
                     nodes {
-                      slug,
-                      datapoints(startDate: $startDate, endDate: $endDate, timeScale: $timeScale) {
-                        nodes { scaledTime, dimensionValue, count }
+                      slug
+                      datapoints(
+                        startDate: $startDate
+                        endDate: $endDate
+                        timeScale: $timeScale
+                      ) {
+                        nodes {
+                          scaledTime
+                          dimensionValue
+                          count
+                        }
                       }
                     }
                   }
@@ -26,7 +42,8 @@ export default class Block {
               }
             }
           }
-        }`,
+        }
+`,
       variables: { dashboardId, startDate, endDate, timeScale },
       pull: 'blocks'
     })

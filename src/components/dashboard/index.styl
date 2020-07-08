@@ -23,7 +23,8 @@ $columnMin = 320px
     border-right: 1px solid getColor('$bgText12')
 
     > .logo
-      font-h5()
+      font-h4()
+      font-weight: 700
       color: getColor('$upchieve500') // FIXME
       margin: 0 12px
 
@@ -31,7 +32,7 @@ $columnMin = 320px
         color: getColor('$bgText54')
 
     > .title
-      font-h6()
+      font-h5()
       margin: 48px 12px 0 12px
       display: none
 
@@ -40,7 +41,7 @@ $columnMin = 320px
       display: none
 
       > .dashboard
-        font-body2()
+        font-subtitle2()
         padding: 12px
         display: block
         border-radius: 6px
@@ -49,7 +50,6 @@ $columnMin = 320px
           background: getColor('$bgColorAlt1')
 
         &.is-selected
-          font-subtitle2()
           background: getColor('$upchieve5008')
           color: getColor('$upchieve500')
 
@@ -64,7 +64,7 @@ $columnMin = 320px
         font-subtitle2(medium)
 
       > .name
-        font-h6()
+        font-h5()
         position: relative
         display: inline-block
         padding-right: 24px
@@ -82,10 +82,10 @@ $columnMin = 320px
 
     > .filters
       padding: 32px 32px 0 32px
-      display: flex
 
       > .time-scale
-        margin-left: 20px
+        display: inline-block
+        margin-top: 16px
 
       > .spinner
         margin-left: 24px
@@ -125,6 +125,14 @@ $columnMin = 320px
         > .name
           > .arrow
             display: none
+
+      > .filters
+        display: flex
+
+        > .time-scale
+          margin-top: 0
+          margin-left: 20px
+
 
       > .data
         display: flex

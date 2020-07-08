@@ -15,8 +15,6 @@ import context from '../../context'
 
 if (typeof window !== 'undefined') { require('./index.styl') }
 
-const SIX_MONTHS_MS = 3600 * 24 * 30 * 6 * 1000
-
 export default function $home (props) {
   const { orgStream, dashboardSlugStream, dashboardStream } = props
   const { model, lang, colors, router } = useContext(context)
@@ -32,11 +30,16 @@ export default function $home (props) {
     // const endDateStreams = new Rx.ReplaySubject(1)
     // endDateStreams.next(Rx.of(Date.now()))
 
+    const startOfSixMonthsAgo = new Date()
+    startOfSixMonthsAgo.setMonth(startOfSixMonthsAgo.getMonth() - 6)
+    startOfSixMonthsAgo.setDate(1)
     const startDateStream = new Rx.BehaviorSubject(
-      DateService.format(new Date(Date.now() - SIX_MONTHS_MS), 'yyyy-mm-dd')
+      DateService.format(startOfSixMonthsAgo, 'yyyy-mm-dd')
     )
+    const endOfLastMonth = new Date()
+    endOfLastMonth.setDate(0)
     const endDateStream = new Rx.BehaviorSubject(
-      DateService.format(new Date(), 'yyyy-mm-dd')
+      DateService.format(endOfLastMonth, 'yyyy-mm-dd')
     )
     const timeScaleValueStream = new Rx.BehaviorSubject('month')
 
@@ -58,8 +61,8 @@ export default function $home (props) {
         rx.switchMap((org) => model.dashboard.getAllByOrgId(org.id))
       ),
       blocksStream: datesAndDashboardStream.pipe(
-        rx.tap(() => { isLoadingStream.next(true) }),
         rx.filter(([startDate, endDate, dashboard]) => startDate && endDate),
+        rx.tap(() => { isLoadingStream.next(true) }),
         rx.switchMap(([startDate, endDate, timeScale, dashboard]) => {
           console.log('get', dashboard, startDate, endDate)
           return model.block.getAllByDashboardId(dashboard.id, {
@@ -91,7 +94,7 @@ export default function $home (props) {
     timeScale: timeScaleValueStream
   }))
 
-  console.log('dash', dashboard, blocks, pinnedBlock)
+  const currentDashboardSlug = dashboardSlug || dashboard?.slug
 
   return z('.z-dashboard', {
     className: classKebab({ isMenuVisible })
@@ -105,7 +108,7 @@ export default function $home (props) {
       z('.dashboards', _.map(dashboards?.nodes, ({ slug, name }) =>
         router.link(z('a.dashboard', {
           className: classKebab({
-            isSelected: slug === dashboardSlug
+            isSelected: slug === currentDashboardSlug
           }),
           href: router.get('dashboard', {
             orgSlug: 'upchieve', // FIXME

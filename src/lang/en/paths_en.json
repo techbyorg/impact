@@ -1,5 +1,6 @@
 {
   "home": "/",
+  "orgHome": "/org/:orgSlug",
   "dashboard": "/org/:orgSlug/dashboard/:dashboardSlug",
   "privacy": "/privacy",
   "fourOhFour": "/*"

@@ -2,6 +2,8 @@ import { z, useContext, useMemo } from 'zorium'
 import * as Rx from 'rxjs'
 import * as rx from 'rxjs/operators'
 
+import useMeta from 'frontend-shared/services/use_meta'
+
 import $dashboard from '../../components/dashboard'
 import context from '../../context'
 
@@ -10,7 +12,8 @@ if (typeof window !== 'undefined') { require('./index.styl') }
 export default function $dashboardPage ({ requestsStream }) {
   const { model } = useContext(context)
 
-  const orgStream = new Rx.BehaviorSubject({ id: 'b6295100-bb45-11ea-91c2-9d708da068b3' }) // FIXME, subdomain, maybe in app.js
+  // FIXME: pull from orgSlug
+  const orgStream = new Rx.BehaviorSubject({ id: 'b6295100-bb45-11ea-91c2-9d708da068b3' })
 
   const { dashboardSlugStream, dashboardStream } = useMemo(() => {
     const dashboardSlugStream = requestsStream.pipe(
@@ -24,6 +27,13 @@ export default function $dashboardPage ({ requestsStream }) {
           model.dashboard.getByOrgIdAndSlug(org.id, dashboardSlug)
         )
       )
+    }
+  }, [])
+
+  useMeta(() => {
+    return {
+      title: 'UPchieve Transparent Data',
+      description: 'UPchieve is an EdTech nonprofit providing on-demand STEM tutoring + college counseling to underserved HS students in the U.S.'
     }
   }, [])
 

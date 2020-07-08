@@ -39,4 +39,4 @@ for file in $(find $paths_dist -maxdepth 1 -iname "bundle_*.js") ; do
   done < <(grep -o "process\.env\.[A-Z0-9_]\+" $file | uniq)
 done < <(find $paths_dist -maxdepth 1 -iname '*.js' -print0)
 
-# node -r ./babel.register.config.js ./bin/frontend_server.js
+node -r ./babel.register.config.js ./bin/frontend_server.js

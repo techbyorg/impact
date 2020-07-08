@@ -22,7 +22,7 @@ app.all('/*', function (req, res, next) {
 if (config.DEV_USE_HTTPS) {
   httpsServer.listen(config.PORT, () => console.log('Listening (https) on port %d', config.PORT))
 } else {
-  console.log('listen');
+  console.log('listen')
 
   app.listen(config.PORT, () => console.log({
     event: 'dev_server_start',

@@ -14,6 +14,7 @@ export default function $app (props) {
       // add to lang/paths_en.json
       // <langKey>: $page
       home: $dashboardPage,
+      orgHome: $dashboardPage,
       dashboard: $dashboardPage,
       privacy: $privacyPage,
       shell: $shellPage,

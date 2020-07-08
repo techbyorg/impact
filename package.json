@@ -23,7 +23,8 @@
     "eslint-plugin-standard": "^4.0.1",
     "frontend-shared-dev": "github:techbyorg/frontend-shared-dev",
     "gulp": "^4.0.2",
-    "gulp-gcloud-publish": "github:aaaton/gulp-gcloud-publish"
+    "gulp-gcloud-publish": "github:aaaton/gulp-gcloud-publish",
+    "stylus": "^0.54.7"
   },
   "dependencies": {
     "@babel/core": "^7.10.1",
@@ -36,6 +37,7 @@
     "lodash": "^4.17.2",
     "lodash-es": "^4.17.15",
     "module-alias": "^2.2.2",
+    "react-day-picker": "^7.4.8",
     "rxjs": "^7.0.0-beta.0",
     "zorium": "github:austinhallock/zorium#preact"
   },

@@ -14,7 +14,7 @@
 
 - Test using .publishReplay(1).refCount() in places where a mapped observable is subscribed to multiple times
 - Unrelated to speed, need to swap localStorage with something else in native iOS app (gets cleared too often)
-- Set user and entityUser in avatar header instead of as props
+- Set user and organizationUser in avatar header instead of as props
 - https://github.com/IguMail/socketio-shared-webworker
 - optimize FormattedMessage. markdown parser is slow (1-5ms per message)
 
