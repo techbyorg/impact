@@ -11,11 +11,11 @@ export default function $blocksOverview ({ timeScale, block }) {
       const allDimension = _.find(metric.dimensions?.nodes, { slug: 'all' })
       const count = allDimension?.datapoints?.nodes[0]?.count || 0
 
-      return z('.metric', [
+      return [
         // server sums all into 1 datapoint for 'overview' type blocks
-        z('.value', FormatService.unit(count, metric.unit)),
-        z('.name', metric.name)
-      ])
+        z('.metric-value', FormatService.unit(count, metric.unit)),
+        z('.metric-name', metric.name)
+      ]
     }))
   ])
 }

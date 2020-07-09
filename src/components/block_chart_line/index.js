@@ -17,7 +17,7 @@ const MAX_MARGIN_LEFT_PX = 100
 export default function $blockChartLine ({ timeScale, block, colors }) {
   const metric = block.metrics.nodes[0]
 
-  const { data, marginLeft } = useMemo(() => {
+  const { data, marginLeft, isSingleDatapoint } = useMemo(() => {
     const dimension = metric.dimensions.nodes[0]
     const dimensionValues = _.groupBy(
       dimension.datapoints.nodes, 'dimensionValue'
@@ -40,10 +40,15 @@ export default function $blockChartLine ({ timeScale, block, colors }) {
     }))
     const marginLeft = Math.min(28 + longestLabel * 5, MAX_MARGIN_LEFT_PX)
 
-    return { data, marginLeft }
+    const mostDatapoints = _.max(_.map(data, ({ data }) => data.length))
+    const isSingleDatapoint = mostDatapoints === 1
+
+    return {
+      data, marginLeft, isSingleDatapoint
+    }
   })
 
-  console.log('line', block.name, marginLeft)
+  console.log('line', block.name, marginLeft, isSingleDatapoint)
 
   const scale = SCALES[timeScale]
   const xCount = data[0]?.data.length || 0
@@ -58,7 +63,7 @@ export default function $blockChartLine ({ timeScale, block, colors }) {
         chartOptions: {
           colors,
           enableGridY: false,
-          pointSize: 0,
+          pointSize: isSingleDatapoint ? 6 : 0,
           lineWidth: 3,
           margin: {
             left: marginLeft

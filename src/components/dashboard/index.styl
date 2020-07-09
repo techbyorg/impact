@@ -7,6 +7,8 @@ $pinnedBlockWidth = 300px
 .z-dashboard
   flex1()
   background: getColor('$bgColorAlt1')
+  overflow: auto
+  -webkit-overflow-scrolling: touch
 
   &.is-menu-visible
     > .menu > .dashboards
@@ -111,15 +113,18 @@ $pinnedBlockWidth = 300px
       padding: 32px
 
       > .filters
+        display: flex
+        overflow-x: auto
+        -webkit-overflow-scrolling: touch
+        margin-right: -32px
+
         > .time-scale
-          display: inline-block
-          margin-top: 16px
+          margin-top: 0
+          margin-left: 20px
 
         > .spinner
           margin-left: 24px
           margin-top: 4px
-
-        margin-bottom: 32px
 
       > .pinned-block
         margin-bottom: 16px
@@ -170,11 +175,8 @@ $pinnedBlockWidth = 300px
 
         > .filters
           grid-area: filters
-          display: flex
-
-          > .time-scale
-            margin-top: 0
-            margin-left: 20px
+          overflow: visible
+          margin-bottom: 32px
 
         > .pinned-block
           grid-area: pinned-block

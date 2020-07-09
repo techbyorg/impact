@@ -4,9 +4,17 @@
   "general.donate": "Donate",
   "general.overview": "Overview",
   "dashboard.donateText": "Help us grow",
+
   "frequencies.day": "Day",
   "frequencies.week": "Week",
   "frequencies.month": "Month",
+
+  "inputDateRange.7days": "Last 7 days",
+  "inputDateRange.30days": "Last 30 days",
+  "inputDateRange.thisMonth": "This month",
+  "inputDateRange.lastMonth": "Last month",
+  "inputDateRange.last6Months": "Last 6 months",
+  "inputDateRange.last12Months": "Last 12 months",
 
   "homePage.title": "Impact",
   "homePage.description": "Nonprofit impact measured"

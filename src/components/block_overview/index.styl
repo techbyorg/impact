@@ -2,19 +2,22 @@
 
 .z-block-overview
   > .metrics
-    > .metric
-      display: flex
-      border-bottom: 1px solid getColor('$bgText6')
-      padding: 12px 0
+    display: grid
+    grid-template-columns: auto 1fr
 
-      &:last-child
+    > .metric-value, > .metric-name
+      border-bottom: 1px solid getColor('$bgText6')
+
+      &:nth-last-child(-n+2) // last-row
         border-bottom: none
 
-      > .value
-        font-h5()
-        color: getColor('$primaryMain')
-        margin-right: 24px
-        width: 60px
+    > .metric-value
+      font-subtitle1()
+      padding: 12px 32px 12px 0
+      color: getColor('$primaryMain')
+      text-align: right
 
-      > .name
-        font-body1(medium)
+    > .metric-name
+      font-body1(medium)
+      padding: 12px 0
+

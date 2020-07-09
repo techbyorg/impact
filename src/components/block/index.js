@@ -1,4 +1,4 @@
-import { z } from 'zorium'
+import { z, classKebab } from 'zorium'
 
 import $blockChartBar from '../block_chart_bar'
 import $blockChartLine from '../block_chart_line'
@@ -19,7 +19,9 @@ export default function $block ({ timeScale, block, colors }) {
           ? $blockChartPie
           : $blockChartLine
 
-  return z('.z-block', [
+  const isPinned = block.settings.isPinned
+
+  return z('.z-block', { className: classKebab({ isPinned }) }, [
     z('.name', block.name),
     z($chart, { timeScale, block, colors })
   ])
