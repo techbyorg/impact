@@ -48,7 +48,7 @@ export default function $blockChartLine ({ timeScale, block, colors }) {
     }
   })
 
-  console.log('line', block.name, marginLeft, isSingleDatapoint)
+  console.log('line', block.name, marginLeft, isSingleDatapoint, data)
 
   const scale = SCALES[timeScale]
   const xCount = data[0]?.data.length || 0

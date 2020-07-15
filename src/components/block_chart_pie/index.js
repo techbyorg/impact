@@ -21,8 +21,6 @@ export default function $blockChartPie ({ block, colors }) {
     }))
   }, [])
 
-  console.log('data...', data)
-
   return z('.z-block-chart-pie', [
     z($chartPie, {
       key: block.id,

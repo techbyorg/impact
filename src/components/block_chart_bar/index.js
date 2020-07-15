@@ -21,7 +21,6 @@ export default function $blockChartBar ({ block, colors }) {
       data = _.orderBy(data, ({ id }) => -1 * parseInt(id), 'asc')
     } else if (dimensions[0].slug === 'day-of-week') {
       data = _.orderBy(data, ({ id }) => {
-        console.log('id', id, DAYS_OF_WEEK.indexOf(id))
         return -1 * DAYS_OF_WEEK.indexOf(id)
       })
     }
@@ -31,8 +30,6 @@ export default function $blockChartBar ({ block, colors }) {
 
     return { data, marginLeft }
   })
-
-  console.log('bar data', data)
 
   return z('.z-block-chart-bar', [
     !_.isEmpty(data) &&

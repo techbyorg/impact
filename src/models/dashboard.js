@@ -18,6 +18,7 @@ export default class Dashboard {
   }
 
   getAllByOrgId (orgId) {
+    console.warn('get dashboards', Date.now())
     return this.auth.stream({
       query: `
         query Dashboards($orgId: String) {

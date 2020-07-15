@@ -65,7 +65,6 @@ export default function $home (props) {
         rx.filter(([startDate, endDate, dashboard]) => startDate && endDate),
         rx.tap(() => { isLoadingStream.next(true) }),
         rx.switchMap(([startDate, endDate, timeScale, dashboard]) => {
-          console.log('get', dashboard, startDate, endDate)
           return model.block.getAllByDashboardId(dashboard.id, {
             startDate, endDate, timeScale
           })
@@ -76,7 +75,7 @@ export default function $home (props) {
   }, [])
 
   const {
-    isMenuVisible, isLoading, dashboard, dashboardSlug, dashboards, blocks,
+    isMenuVisible, isLoading, dashboard, dashboardSlug, dashboards, org, blocks,
     pinnedBlock, timeScale
   } = useStream(() => ({
     isMenuVisible: isMenuVisibleStream,
@@ -84,6 +83,7 @@ export default function $home (props) {
     dashboard: dashboardStream,
     dashboardSlug: dashboardSlugStream,
     dashboards: dashboardsStream,
+    org: orgStream,
     blocks: blocksStream.pipe(
       rx.map((blocks) =>
         _.filter(blocks.nodes, ({ settings }) => !settings?.isPinned)
@@ -97,12 +97,19 @@ export default function $home (props) {
 
   const currentDashboardSlug = dashboardSlug || dashboard?.slug
 
+  console.log('blocks', blocks)
+
+  const isHackClub = org?.slug === 'hackclub' // FIXME: non-hardcoded logo
+
   return z('.z-dashboard', {
-    className: classKebab({ isMenuVisible })
+    className: classKebab({ isMenuVisible, isHackClub })
   }, [
     z('.menu', [
       z('.logo', [
-        'UPchieve',
+        // TODO: non-hardcoded
+        org?.slug === 'hackclub'
+          ? 'Hack Club'
+          : 'UPchieve',
         z('span.data', 'Data')
       ]),
       z('.title', [
@@ -115,7 +122,7 @@ export default function $home (props) {
             isSelected: slug === currentDashboardSlug
           }),
           href: router.get('dashboard', {
-            orgSlug: 'upchieve', // FIXME
+            // orgSlug: 'upchieve', // FIXME
             dashboardSlug: slug
           })
         }, name))
@@ -129,7 +136,13 @@ export default function $home (props) {
             isPrimary: true,
             isFullWidth: false,
             onclick: () => {
-              router.openLink('https://secure.givelively.org/donate/upchieve')
+              // TODO: non-hardcoded
+              if (org?.slug === 'hackclub') {
+                router.openLink('https://hackclub.com/donate/')
+              }
+              else {
+                router.openLink('https://secure.givelively.org/donate/upchieve')
+              }
             }
           })
         ])
