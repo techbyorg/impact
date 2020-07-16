@@ -16,21 +16,21 @@ import context from '../../context'
 
 if (typeof window !== 'undefined') { require('./index.styl') }
 
+const DATE_DEBOUNCE_TIME_MS = 10
+
 export default function $home (props) {
   const { orgStream, dashboardSlugStream, dashboardStream } = props
   const { model, lang, colors, router } = useContext(context)
 
   const {
-    startDateStream, endDateStream, timeScaleValueStream, gColors,
-    isMenuVisibleStream, isLoadingStream, dashboardsStream, blocksStream
+    startDateStream, endDateStream, presetDateRangeStream, timeScaleValueStream,
+    gColors, isMenuVisibleStream, isLoadingStream, dashboardsStream,
+    blocksStream
   } = useMemo(() => {
     // TODO: get from url. broken with preact (rerender suspense bug)
     // https://github.com/preactjs/preact/pull/2570
-    // const startDateStreams = new Rx.ReplaySubject(1)
-    // startDateStreams.next(Rx.of(Date.now()))
-    // const endDateStreams = new Rx.ReplaySubject(1)
-    // endDateStreams.next(Rx.of(Date.now()))
-
+    // ^^ "fix" was merged in, but still breaks (this time when trying
+    // to dismount lazy component)
     const startOfSixMonthsAgo = new Date()
     startOfSixMonthsAgo.setMonth(startOfSixMonthsAgo.getMonth() - 6)
     startOfSixMonthsAgo.setDate(1)
@@ -43,17 +43,21 @@ export default function $home (props) {
       DateService.format(endOfLastMonth, 'yyyy-mm-dd')
     )
     const timeScaleValueStream = new Rx.BehaviorSubject('month')
+    const presetDateRangeStream = new Rx.BehaviorSubject(null)
 
     const datesAndDashboardStream = Rx.combineLatest(
       startDateStream,
       endDateStream,
       timeScaleValueStream,
       dashboardStream
-    )
+    // if timeScaleValueStream and dates change on same action (eg the
+    // preset date dropdown), combine both
+    ).pipe(rx.debounceTime(DATE_DEBOUNCE_TIME_MS))
 
     return {
       startDateStream,
       endDateStream,
+      presetDateRangeStream,
       timeScaleValueStream,
       gColors: _.map(graphColors, 'graph'),
       isMenuVisibleStream: new Rx.BehaviorSubject(false),
@@ -65,6 +69,8 @@ export default function $home (props) {
         rx.filter(([startDate, endDate, dashboard]) => startDate && endDate),
         rx.tap(() => { isLoadingStream.next(true) }),
         rx.switchMap(([startDate, endDate, timeScale, dashboard]) => {
+          console.log('gooo')
+          console.warn(startDate, endDate, timeScale)
           return model.block.getAllByDashboardId(dashboard.id, {
             startDate, endDate, timeScale
           })
@@ -84,6 +90,24 @@ export default function $home (props) {
     dashboardSlug: dashboardSlugStream,
     dashboards: dashboardsStream,
     org: orgStream,
+    // subscribed for side-effect
+    presetDateRange: presetDateRangeStream.pipe(
+      rx.map((presetDateRange) => {
+        switch (presetDateRange) {
+          case 'today':
+          case '7days':
+          case '30days':
+          case 'thisMonth':
+          case 'lastMonth':
+            return 'day'
+          default:
+            return 'month'
+        }
+      }),
+      rx.tap((timeScale) => {
+        timeScaleValueStream.next(timeScale)
+      })
+    ),
     blocks: blocksStream.pipe(
       rx.map((blocks) =>
         _.filter(blocks.nodes, ({ settings }) => !settings?.isPinned)
@@ -109,7 +133,9 @@ export default function $home (props) {
         // TODO: non-hardcoded
         org?.slug === 'hackclub'
           ? 'Hack Club'
-          : 'UPchieve',
+          : org?.slug === 'upchieve'
+            ? 'UPchieve'
+            : '',
         z('span.data', 'Data')
       ]),
       z('.title', [
@@ -139,8 +165,7 @@ export default function $home (props) {
               // TODO: non-hardcoded
               if (org?.slug === 'hackclub') {
                 router.openLink('https://hackclub.com/donate/')
-              }
-              else {
+              } else {
                 router.openLink('https://secure.givelively.org/donate/upchieve')
               }
             }
@@ -162,7 +187,9 @@ export default function $home (props) {
         z('.filters', [
           // select
           z('.date-range', [
-            z($inputDateRange, { startDateStream, endDateStream })
+            z($inputDateRange, {
+              startDateStream, endDateStream, presetDateRangeStream
+            })
           ]),
           z('.time-scale', [
             z($dropdown, {

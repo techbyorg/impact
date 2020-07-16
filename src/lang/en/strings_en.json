@@ -9,6 +9,7 @@
   "frequencies.week": "Week",
   "frequencies.month": "Month",
 
+  "inputDateRange.today": "Today",
   "inputDateRange.7days": "Last 7 days",
   "inputDateRange.30days": "Last 30 days",
   "inputDateRange.thisMonth": "This month",
