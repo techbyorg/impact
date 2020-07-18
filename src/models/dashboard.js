@@ -1,10 +1,9 @@
 export default class Dashboard {
   constructor ({ auth }) {
-    this.getAllByOrgId = this.getAllByOrgId.bind(this)
     this.auth = auth
   }
 
-  getByOrgIdAndSlug (orgId, slug) {
+  getByOrgIdAndSlug = (orgId, slug) => {
     return this.auth.stream({
       query: `
         query DashboardByOrgIdAndSlug($orgId: String, $slug: String) {
@@ -17,7 +16,7 @@ export default class Dashboard {
     })
   }
 
-  getAllByOrgId (orgId) {
+  getAllByOrgId = (orgId) => {
     console.warn('get dashboards', Date.now())
     return this.auth.stream({
       query: `

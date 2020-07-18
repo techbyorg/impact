@@ -1,10 +1,9 @@
 export default class Block {
   constructor ({ auth }) {
-    this.getAllByDashboardId = this.getAllByDashboardId.bind(this)
     this.auth = auth
   }
 
-  getAllByDashboardId (dashboardId, { startDate, endDate, timeScale }) {
+  getAllByDashboardId = (dashboardId, { startDate, endDate, timeScale }) => {
     return this.auth.stream({
       query: `
         query BlocksByDashboardId(

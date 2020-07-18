@@ -2,7 +2,6 @@ export default class Experiment {
   // TODO: have exp cookies only last ~ a month
   constructor ({ cookie }) {
     let rand
-    this.get = this.get.bind(this)
     this.cookie = cookie
     let expDefault = this.cookie.get('exp:default')
     if (!expDefault) {
@@ -56,7 +55,7 @@ export default class Experiment {
     }
   }
 
-  get (key) {
+  get = (key) => {
     return this.experiments[key]
   }
 }

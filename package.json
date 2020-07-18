@@ -11,6 +11,7 @@
     "postinstall": "sh -c \"./node_modules/are-you-es5/dist/cli.js check -r ./frontend-shared | tail -n 2 | head -n 1 > ./.non_es5 \""
   },
   "devDependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.10.4",
     "@babel/plugin-proposal-optional-chaining": "^7.10.1",
     "are-you-es5": "^2.1.0",
     "babel-eslint": "^10.1.0",

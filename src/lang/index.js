@@ -8,10 +8,6 @@ let files = {
 }
 
 class Language {
-  constructor () {
-    this.getJsonString = this.getJsonString.bind(this)
-  }
-
   getLangFiles (language) {
     return _.mapValues(files, (val, file) => {
       let languages
@@ -43,7 +39,7 @@ class Language {
   }
 
   // used by gulp to concat lang to bundle
-  getJsonString (language) {
+  getJsonString = (language) => {
     files = this.getLangFiles(language)
 
     const str = JSON.stringify(files)
