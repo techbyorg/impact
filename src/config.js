@@ -32,7 +32,7 @@ const CDN_URL = 'https://fdn.uno/d/images' // FIXME
 
 // All keys must have values at run-time (value may be null)
 const isomorphic = {
-  APP_KEY: 'tech-by',
+  APP_KEY: 'impact',
   APP_NAME: 'TechBy',
   LANGUAGES: ['en'],
 

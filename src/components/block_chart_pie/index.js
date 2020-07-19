@@ -19,7 +19,7 @@ export default function $blockChartPie ({ block, colors }) {
       percent: 100 * count / sum,
       color: colors[i % colors.length]
     }))
-  }, [])
+  }, [dimensions[0].datapoints.nodes[0]?.count])
 
   return z('.z-block-chart-pie', [
     z($chartPie, {
