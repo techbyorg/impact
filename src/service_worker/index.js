@@ -7,7 +7,7 @@ import config from '../config'
 const push = new Push({ cdnUrl: config.CDN_URL, host: config.HOST })
 push.listen()
 
-const cache = new Cache()
+const cache = new Cache({ host: config.HOST })
 cache.listen()
 
 const portal = new Portal({ cache })

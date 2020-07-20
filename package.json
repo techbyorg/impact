@@ -16,6 +16,7 @@
     "are-you-es5": "^2.1.0",
     "babel-eslint": "^10.1.0",
     "babel-plugin-hyperscript-to-jsx": "^2.0.0",
+    "babel-plugin-transform-inline-environment-variables": "^0.4.3",
     "eslint": "^7.2.0",
     "eslint-config-standard": "^14.1.1",
     "eslint-plugin-import": "^2.21.2",

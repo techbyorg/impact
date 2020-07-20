@@ -15,7 +15,13 @@ export default function $app (props) {
       // <langKey>: $page
       home: $dashboardPage,
       orgHome: $dashboardPage,
-      dashboard: $dashboardPage,
+      orgDashboard: $dashboardPage,
+
+      // duplicate for org routes too for custom domains to work
+      // TODO: come up with better solution. currently we detect custom
+      // domain and add /org/orgSlug to the hash.get
+      orgPrivacy: $privacyPage,
+      orgShell: $shellPage,
       privacy: $privacyPage,
       shell: $shellPage,
       fourOhFour: $404Page

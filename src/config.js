@@ -7,7 +7,7 @@ import assertNoneMissing from 'assert-none-missing/index.js'
 let API_HOST, API_PATH, config
 
 // Don't let server environment variables leak into client code
-const serverEnv = process.env
+const serverEnv = process?.env
 
 const HOST = process.env.IMPACT_HOST || '127.0.0.1'
 const HOSTNAME = HOST.split(':')[0]
@@ -17,7 +17,6 @@ const API_URL =
   process.env.PUBLIC_PHIL_API_URL // client
 
 const DEV_USE_HTTPS = process.env.DEV_USE_HTTPS && (process.env.DEV_USE_HTTPS !== '0')
-
 const isUrl = API_URL.indexOf('/') !== -1
 if (isUrl) {
   const API_HOST_ARRAY = API_URL.split('/')

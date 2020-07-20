@@ -1,7 +1,11 @@
 {
   "home": "/",
   "orgHome": "/org/:orgSlug",
-  "dashboard": "/org/:orgSlug/dashboard/:dashboardSlug",
+  "orgDashboard": "/org/:orgSlug/dashboard/:dashboardSlug",
+
+  "orgPrivacy": "/org/:orgSlug/privacy",
+  "orgShell": "/org/:orgSlug/cache-shell",
   "privacy": "/privacy",
+  "shell": "/cache-shell",
   "fourOhFour": "/*"
 }

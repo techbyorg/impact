@@ -24,6 +24,6 @@ export default function $shellPage () {
       $topLeftButton:
         z($buttonMenu, { color: colors.$header500Icon })
     }),
-    z('.spinner', $spinner)
+    z('.spinner', z($spinner))
   ])
 }
