@@ -18,8 +18,16 @@ export default function $dashboardPage ({ requestsStream }) {
     )
     const orgStream = requestsStream.pipe(
       rx.switchMap(({ route }) => {
-        console.log('get org', route.params.orgSlug || 'upchieve')
-        return model.org.getBySlug(route.params.orgSlug || 'upchieve') // FIXME: rm upchieve
+        let orgSlug
+        if (route.params.orgSlug) {
+          orgSlug = route.params.orgSlug
+        } else if (router.getHost() === 'data.upchieve.org') {
+          // FIXME: non-hardcoded
+          orgSlug = 'upchieve'
+        } else { // if (router.getHost() === 'numberwang.hackclub.com') {
+          orgSlug = 'hackclub'
+        }
+        return model.org.getBySlug(orgSlug) // FIXME: rm upchieve
       })
     )
     const orgAndDashboardSlug = Rx.combineLatest(orgStream, dashboardSlugStream)
