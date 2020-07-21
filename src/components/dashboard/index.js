@@ -146,11 +146,11 @@ export default function $home (props) {
         lang.get('general.dashboards')
       ]),
       z('.dashboards', _.map(dashboards?.nodes, ({ slug, name }) =>
-        router.link(z('a.dashboard', {
+        router.linkIfHref(z('a.dashboard', {
           className: classKebab({
             isSelected: slug === currentDashboardSlug
           }),
-          href: router.get('dashboard', {
+          href: router.get('orgDashboard', {
             // orgSlug: 'upchieve', // FIXME
             dashboardSlug: slug
           })

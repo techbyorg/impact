@@ -5,6 +5,7 @@ import $sharedApp from 'frontend-shared/app'
 import $privacyPage from 'frontend-shared/pages/privacy'
 
 import $dashboardPage from './pages/dashboard'
+import $homePage from './pages/home'
 import $shellPage from './pages/shell'
 import $404Page from './pages/404'
 
@@ -13,7 +14,7 @@ export default function $app (props) {
     routes: {
       // add to lang/paths_en.json
       // <langKey>: $page
-      home: $dashboardPage,
+      home: $homePage,
       orgHome: $dashboardPage,
       orgDashboard: $dashboardPage,
 

@@ -1,0 +1,93 @@
+@require '../../vars'
+
+.z-home
+  text-align: center
+  background: getColor('$bgColorAlt1')
+
+  > .main-info
+    padding: 154px 16px 172px
+
+    > .title
+      font-h1-heavy()
+      display: flex
+      justify-content: center
+
+      > .heart
+        margin-top: 24px
+        margin-left: 8px
+
+    > .description
+      font-h3()
+      margin-top: 28px
+
+    > .screenshot-container
+      width: 1260px
+      max-width: 100%
+      margin: 56px auto 0 auto
+
+      > .screenshot
+        shadow-panel()
+        border: 1px solid getColor('$bgText12')
+        background-image: url($cdnUrl + '/techby/impact/impact_thumbnail.png?1')
+        background-size: 100%
+        height: 0
+        padding-bottom: 100 * (730 / 1260)%
+        background-color: getColor('$bgColor')
+        border-radius: 8px
+
+    > .nonprofits-using
+      font-h2()
+      margin-top: 192px
+
+    > .nonprofits
+      margin-top: 80px
+
+      > .nonprofit
+        display: block
+
+        &.hackclub
+          > .image
+            width: 142px
+            background-image: url($cdnUrl + '/techby/impact/orgs/hackclub.svg')
+
+        &.upchieve
+          margin-top: 32px
+
+          > .image
+            width: 188.23px
+            background-image: url($cdnUrl + '/techby/impact/orgs/upchieve.svg?1')
+
+        > .image
+          height: 80px
+          margin: 0 auto
+          background-size: 100%
+
+        > .name
+          font-h5()
+          margin-top: 20px
+          text-align: center
+
+  > .request-access
+    padding: 214px 16px
+    background: getColor('$secondary500')
+
+    > .title
+      font-h1()
+      color: getColor('$secondary500Text')
+
+    > .button
+      margin-top: 56px
+
+  @media (min-width: $breakPointMedium)
+    > .main-info
+      > .nonprofits
+        display: flex
+
+        > .nonprofit
+          &.hackclub
+            margin-left: auto
+
+          &.upchieve
+            margin-top: 0
+            margin-left: 244px
+            margin-right: auto

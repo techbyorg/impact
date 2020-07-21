@@ -4,6 +4,11 @@
   "general.donate": "Donate",
   "general.overview": "Overview",
   "dashboard.donateText": "Help us grow",
+  "home.title": "Impact",
+  "home.description": "Easily track, share, and learn from your metrics",
+  "home.nonprofitsUsing": "Super cool nonprofits already using Impact",
+  "home.inviteOnly": "Invite only",
+  "home.requestAccess": "Request early access",
 
   "frequencies.day": "Day",
   "frequencies.week": "Week",
