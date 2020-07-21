@@ -4,11 +4,10 @@ import $appBar from 'frontend-shared/components/app_bar'
 import $buttonMenu from 'frontend-shared/components/button_menu'
 import $button from 'frontend-shared/components/button'
 
-import colors from '../../colors'
 import context from '../../context'
 
 export default function $404Page () {
-  const { lang, router } = useContext(context)
+  const { colors, lang, router } = useContext(context)
 
   return z('.p-404', [
     z($appBar, {

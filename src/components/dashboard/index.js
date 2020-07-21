@@ -11,10 +11,10 @@ import $importedInlineSvg from 'frontend-shared/components/imported_inline_svg'
 import $masonryGrid from 'frontend-shared/components/masonry_grid'
 import $spinner from 'frontend-shared/components/spinner'
 import DateService from 'frontend-shared/services/date'
+import { graphColors } from 'frontend-shared/colors'
 
 import $block from '../block'
 import { bankIconPath } from '../icon/paths'
-import { graphColors } from '../../colors'
 import context from '../../context'
 
 if (typeof window !== 'undefined') { require('./index.styl') }

@@ -7,7 +7,7 @@ module.exports = function () {
       var isString = typeof color.string === 'string'
       var isVariable = isString && color.string.substring(0, 2) === '--'
       if (isVariable) {
-        return new nodes.Literal(colors.default[color.string])
+        return new nodes.Literal(colors.cssColors[color.string])
       } else { return color }
     })
   }
