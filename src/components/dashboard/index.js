@@ -5,12 +5,15 @@ import * as rx from 'rxjs/operators'
 
 import $button from 'frontend-shared/components/button'
 import $dropdown from 'frontend-shared/components/dropdown'
+import $icon from 'frontend-shared/components/icon'
 import $inputDateRange from 'frontend-shared/components/input_date_range'
+import $importedInlineSvg from 'frontend-shared/components/imported_inline_svg'
 import $masonryGrid from 'frontend-shared/components/masonry_grid'
 import $spinner from 'frontend-shared/components/spinner'
 import DateService from 'frontend-shared/services/date'
 
 import $block from '../block'
+import { bankIconPath } from '../icon/paths'
 import { graphColors } from '../../colors'
 import context from '../../context'
 
@@ -129,11 +132,11 @@ export default function $home (props) {
     className: classKebab({ isMenuVisible, isHackClub })
   }, [
     z('.menu', [
-      z('.logo', [
+      z('.logo', org && [
         // TODO: non-hardcoded
-        org?.slug === 'hackclub'
+        org.slug === 'hackclub'
           ? 'Hack Club'
-          : org?.slug === 'upchieve'
+          : org.slug === 'upchieve'
             ? 'UPchieve'
             : '',
         z('span.data', 'Data')
@@ -154,12 +157,19 @@ export default function $home (props) {
         }, name))
       )),
       z('.donate', [
-        z('.image'),
+        z('.image', [
+          z($importedInlineSvg, {
+            importPromise: import(
+              /* webpackChunkName: "donate_svg" */
+              '../svgs/donate.js'
+            )
+          })
+        ]),
         z('.text', lang.get('dashboard.donateText')),
         z('.button', [
           z($button, {
             text: lang.get('general.donate'),
-            isPrimary: true,
+            isSecondary: true,
             isFullWidth: false,
             onclick: () => {
               // TODO: non-hardcoded
@@ -184,6 +194,22 @@ export default function $home (props) {
         ])
       ]),
       z('.data', [
+        // FIXME: non-hardcoded
+        org?.slug === 'hackclub' && z('.custom-message', [
+          z('.icon', [
+            z($icon, {
+              icon: bankIconPath,
+              color: colors.$bgText,
+              size: '16px'
+            })
+          ]),
+          z('.text',
+            'Our finances are open too. See them ',
+            router.link(z('a.link', {
+              href: 'https://bank.hackclub.com/hq'
+            }, 'here'))
+          )
+        ]),
         z('.filters', [
           // select
           z('.date-range', [

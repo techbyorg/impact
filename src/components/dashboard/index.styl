@@ -87,7 +87,6 @@ $pinnedBlockWidth = 300px
       > .image
         width: 109px
         height: 132px
-        background: url($cdnUrl + '/techby/impact/donate.svg')
         margin: -4px auto 0 auto
 
       > .text
@@ -122,6 +121,23 @@ $pinnedBlockWidth = 300px
 
     > .data
       padding: 32px
+
+      > .custom-message
+        font-body1()
+        margin-bottom: 32px
+        display: flex
+        align-items: center
+
+        > .icon
+          margin-right: 20px
+          border: 2px solid getColor('$bgText')
+          border-radius: 50%
+          padding: 6px
+
+        > .text
+          > .link
+            font-subtitle1()
+            text-decoration: underline
 
       > .filters
         display: flex
@@ -178,11 +194,14 @@ $pinnedBlockWidth = 300px
 
       > .data
         display: grid
-        grid-template: 'filters filters' 'blocks pinned-block' 'blocks .'
+        grid-template: 'custom-message custom-message' 'filters filters' 'blocks pinned-block' 'blocks .'
         grid-template-columns: 1fr $pinnedBlockWidth
         grid-column-gap: 32px
         overflow: auto
         -webkit-overflow-scrolling: touch
+
+        > .custom-message
+          grid-area: custom-message
 
         > .filters
           grid-area: filters
