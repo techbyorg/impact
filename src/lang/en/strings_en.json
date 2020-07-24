@@ -9,6 +9,7 @@
   "home.nonprofitsUsing": "Super cool nonprofits already using Impact",
   "home.inviteOnly": "Invite only",
   "home.requestAccess": "Request early access",
+  "home.techBy": "Tech by a nonprofit, for nonprofits",
 
   "frequencies.day": "Day",
   "frequencies.week": "Week",
@@ -21,6 +22,7 @@
   "inputDateRange.lastMonth": "Last month",
   "inputDateRange.last6Months": "Last 6 months",
   "inputDateRange.last12Months": "Last 12 months",
+  "inputDateRange.thisYear": "This year",
 
   "homePage.title": "Impact",
   "homePage.description": "Nonprofit impact measured"

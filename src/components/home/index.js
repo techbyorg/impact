@@ -25,6 +25,7 @@ export default function $home () {
       ]),
       z('.description', lang.get('home.description')),
       z('.screenshot-container', z('.screenshot')),
+      z('.tech-by', lang.get('home.techBy')),
       z('.nonprofits-using', lang.get('home.nonprofitsUsing')),
       z('.nonprofits', [
         router.link(z('a.nonprofit.hackclub', {

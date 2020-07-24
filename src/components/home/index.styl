@@ -35,15 +35,27 @@
         background-color: getColor('$bgColor')
         border-radius: 8px
 
+    > .tech-by
+      font-h1()
+      color: getColor('$secondary500')
+      margin-top: 192px
+
     > .nonprofits-using
       font-h2()
-      margin-top: 192px
+      margin-top: 20px
 
     > .nonprofits
       margin-top: 80px
 
       > .nonprofit
+        shadow-1()
         display: block
+        background: getColor('$bgColor')
+        padding: 40px 36px
+        border-radius: 6px
+
+        &:hover
+          shadow-2()
 
         &.hackclub
           > .image

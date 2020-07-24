@@ -23,45 +23,106 @@ const DATE_DEBOUNCE_TIME_MS = 10
 
 export default function $home (props) {
   const { orgStream, dashboardSlugStream, dashboardStream } = props
-  const { model, lang, colors, router } = useContext(context)
+  const { model, lang, colors, router, cookie } = useContext(context)
 
   const {
-    startDateStream, endDateStream, presetDateRangeStream, timeScaleValueStream,
+    startDateStream, endDateStream, presetDateRangeStream, timeScaleStream,
     gColors, isMenuVisibleStream, isLoadingStream, dashboardsStream,
     blocksStream
   } = useMemo(() => {
+    const timeScaleStream = new Rx.BehaviorSubject(
+      cookie.get('timeScale') || 'month'
+    )
+    const initialPresetDateRange = cookie.get('presetDateRange') || 'last6Months'
+    const presetDateRangeStream = new Rx.BehaviorSubject(initialPresetDateRange)
     // TODO: get from url. broken with preact (rerender suspense bug)
     // https://github.com/preactjs/preact/pull/2570
     // ^^ "fix" was merged in, but still breaks (this time when trying
     // to dismount lazy component)
-    const startOfSixMonthsAgo = new Date()
-    startOfSixMonthsAgo.setMonth(startOfSixMonthsAgo.getMonth() - 6)
-    startOfSixMonthsAgo.setDate(1)
+    const presetDates = DateService.getDatesFromPresetDateRange(
+      initialPresetDateRange
+    )
+
     const startDateStream = new Rx.BehaviorSubject(
-      DateService.format(startOfSixMonthsAgo, 'yyyy-mm-dd')
+      cookie.get('startDate') ||
+        DateService.format(presetDates.startDate, 'yyyy-mm-dd')
     )
-    const endOfLastMonth = new Date()
-    endOfLastMonth.setDate(0)
     const endDateStream = new Rx.BehaviorSubject(
-      DateService.format(endOfLastMonth, 'yyyy-mm-dd')
+      cookie.get('endDate') ||
+        DateService.format(presetDates.endDate, 'yyyy-mm-dd')
     )
-    const timeScaleValueStream = new Rx.BehaviorSubject('month')
-    const presetDateRangeStream = new Rx.BehaviorSubject(null)
 
     const datesAndDashboardStream = Rx.combineLatest(
       startDateStream,
       endDateStream,
-      timeScaleValueStream,
+      timeScaleStream,
       dashboardStream
-    // if timeScaleValueStream and dates change on same action (eg the
+    // if timeScaleStream and dates change on same action (eg the
     // preset date dropdown), combine both
     ).pipe(rx.debounceTime(DATE_DEBOUNCE_TIME_MS))
 
+    let isFirstPresetDateRange = true
+
     return {
+      // TODO: uncomment when fixed in preact (and rm cookie.set from calendar)
+      // https://github.com/preactjs/preact/pull/2570
+      // ^^ "fix" was merged in, but still breaks (this time when trying
+      // to dismount lazy component)
+      // startDateStream: startDateStream.pipe(
+      //   rx.tap((startDate) => {
+      //     if (!globalThis.window) return
+      //     startDate && cookie.set('startDate', startDate)
+      //   })
+      // ),
+      // endDateStream: endDateStream.pipe(
+      //   rx.tap((endDate) => {
+      //     if (!globalThis.window) return
+      //     endDate && cookie.set('endDate', endDate)
+      //   })
+      // ),
+      presetDateRangeStream: presetDateRangeStream.pipe(
+        rx.tap((presetDateRange) => {
+          if (!globalThis.window) return
+          // timeout because the start and endDate cookies are also being
+          // set when presetDateRange changes
+          presetDateRange && cookie.set('presetDateRange', presetDateRange)
+
+          if (isFirstPresetDateRange) {
+            // don't override timeScale from cookie
+            isFirstPresetDateRange = false
+            return
+          }
+
+          setTimeout(() => {
+            cookie.set('startDate', '')
+            cookie.set('endDate', '')
+          }, 0)
+
+          let timeScale
+          switch (presetDateRange) {
+            case 'today':
+            case '7days':
+            case '30days':
+            case 'thisMonth':
+            case 'lastMonth':
+              timeScale = 'day'
+              break
+            default:
+              timeScale = 'month'
+          }
+          timeScaleStream.next(timeScale)
+        })
+      ),
+      timeScaleStream: timeScaleStream.pipe(
+        rx.tap((timeScale) => {
+          if (!globalThis.window) return
+          timeScale && cookie.set('timeScale', timeScale)
+        })
+      ),
       startDateStream,
       endDateStream,
-      presetDateRangeStream,
-      timeScaleValueStream,
+      // presetDateRangeStream,
+      // timeScaleStream,
       gColors: _.map(graphColors, 'graph'),
       isMenuVisibleStream: new Rx.BehaviorSubject(false),
       isLoadingStream: new Rx.BehaviorSubject(false),
@@ -72,8 +133,6 @@ export default function $home (props) {
         rx.filter(([startDate, endDate, dashboard]) => startDate && endDate),
         rx.tap(() => { isLoadingStream.next(true) }),
         rx.switchMap(([startDate, endDate, timeScale, dashboard]) => {
-          console.log('gooo')
-          console.warn(startDate, endDate, timeScale)
           return model.block.getAllByDashboardId(dashboard.id, {
             startDate, endDate, timeScale
           })
@@ -93,24 +152,6 @@ export default function $home (props) {
     dashboardSlug: dashboardSlugStream,
     dashboards: dashboardsStream,
     org: orgStream,
-    // subscribed for side-effect
-    presetDateRange: presetDateRangeStream.pipe(
-      rx.map((presetDateRange) => {
-        switch (presetDateRange) {
-          case 'today':
-          case '7days':
-          case '30days':
-          case 'thisMonth':
-          case 'lastMonth':
-            return 'day'
-          default:
-            return 'month'
-        }
-      }),
-      rx.tap((timeScale) => {
-        timeScaleValueStream.next(timeScale)
-      })
-    ),
     blocks: blocksStream.pipe(
       rx.map((blocks) =>
         _.filter(blocks.nodes, ({ settings }) => !settings?.isPinned)
@@ -119,12 +160,13 @@ export default function $home (props) {
     pinnedBlock: blocksStream.pipe(
       rx.map((blocks) => _.find(blocks.nodes, ({ settings }) => settings?.isPinned))
     ),
-    timeScale: timeScaleValueStream
+    presetDateRange: presetDateRangeStream, // only sub'd for side-effect
+    timeScale: timeScaleStream
   }))
 
   const currentDashboardSlug = dashboardSlug || dashboard?.slug
 
-  console.log('blocks', blocks)
+  console.log('render dashboard')
 
   const isHackClub = org?.slug === 'hackclub' // FIXME: non-hardcoded logo
 
@@ -151,7 +193,7 @@ export default function $home (props) {
             isSelected: slug === currentDashboardSlug
           }),
           href: router.get('orgDashboard', {
-            // orgSlug: 'upchieve', // FIXME
+            orgSlug: org?.slug,
             dashboardSlug: slug
           })
         }, name))
@@ -219,7 +261,7 @@ export default function $home (props) {
           ]),
           z('.time-scale', [
             z($dropdown, {
-              valueStream: timeScaleValueStream,
+              valueStream: timeScaleStream,
               options: [
                 { value: 'day', text: lang.get('frequencies.day') },
                 { value: 'week', text: lang.get('frequencies.week') },
