@@ -8,7 +8,7 @@ import FormatService from 'frontend-shared/services/format'
 if (typeof window !== 'undefined') { require('./index.styl') }
 
 const SCALES = {
-  day: { format: '%b %d', precision: 'day' },
+  day: { format: '%b %d', tooltipFormat: '%a, %b %d', precision: 'day' },
   week: { format: '%b %d', precision: 'day' },
   month: { format: '%B', precision: 'month' }
 }
@@ -72,7 +72,7 @@ export default function $blockChartLine ({ timeScale, block, colors }) {
             useUTC: true,
             precision: scale.precision
           },
-          xFormat: `time:${scale.format}`,
+          xFormat: `time:${scale.tooltipFormat || scale.format}`,
           yFormat: (val) => FormatService.unit(val, metric.unit, 'graph'),
           axisLeft: {
             tickValues: 5,

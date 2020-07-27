@@ -121,6 +121,31 @@ export default function $dashboardPage ({ requestsStream }) {
         '--secondary-800': '#121C27',
         '--secondary-900': '#0A111A'
       })
+    } else if (orgSlug === 'freeroam') {
+      return colors.getCssVariables({
+        '--primary-50': '#FBE9E7',
+        '--primary-100': '#FFCCBC',
+        '--primary-200': '#FFAB91',
+        '--primary-300': '#FF8A65',
+        '--primary-400': '#FF7043',
+        '--primary-500': '#FF5722',
+        '--primary-600': '#F4511E',
+        '--primary-700': '#E64A19',
+        '--primary-800': '#D84315',
+        '--primary-900': '#BF360C',
+        '--primary-main': '#FF5722', // primary500
+        '--primary-main-8': 'rgba(255, 87, 34, 0.08)',
+        '--secondary-50': '#E0F2F1',
+        '--secondary-100': '#B2DFDB',
+        '--secondary-200': '#80CBC4',
+        '--secondary-300': '#4DB6AC',
+        '--secondary-400': '#26A69A',
+        '--secondary-500': '#009688',
+        '--secondary-600': '#00897B',
+        '--secondary-700': '#00796B',
+        '--secondary-800': '#00695C',
+        '--secondary-900': '#004D40'
+      })
     } else {
       return colors.getCssVariables()
     }

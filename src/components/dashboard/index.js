@@ -180,7 +180,9 @@ export default function $home (props) {
           ? 'Hack Club'
           : org.slug === 'upchieve'
             ? 'UPchieve'
-            : '',
+            : org.slug === 'freeroam'
+              ? 'FreeRoam'
+              : '',
         z('span.data', 'Data')
       ]),
       z('.title', [
@@ -217,6 +219,8 @@ export default function $home (props) {
               // TODO: non-hardcoded
               if (org?.slug === 'hackclub') {
                 router.openLink('https://hackclub.com/donate/')
+              } else if (org?.slug === 'freeroam') {
+                router.openLink('https://freeroam.app/donate')
               } else {
                 router.openLink('https://secure.givelively.org/donate/upchieve')
               }
