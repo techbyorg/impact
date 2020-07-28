@@ -38,7 +38,7 @@ class Language {
     })
   }
 
-  // used by gulp to concat lang to bundle
+  // used by webpack to concat lang to bundle
   getJsonString = (language) => {
     files = this.getLangFiles(language)
 

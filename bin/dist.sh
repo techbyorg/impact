@@ -4,7 +4,7 @@ CURRENT_COMMIT=$(git rev-parse HEAD)
 LAST_TAG=$(git tag | sort -V -r | sed '1q;d')
 
 if [ -z $LAST_TAG ]; then
-  ./node_modules/gulp/bin/gulp.js dist
+  ./node_modules/webpack/bin/webpack.js --config-register ~/dev/impact/babel.register.config.js
   exit 0
 fi
 
@@ -15,13 +15,13 @@ if [ "$CURRENT_COMMIT" = "$LAST_TAG_COMMIT" ]; then
 fi
 
 if [ -z $LAST_TAG ]; then
-  ./node_modules/gulp/bin/gulp.js dist
+  ./node_modules/webpack/bin/webpack.js --config-register ~/dev/impact/babel.register.config.js
   exit 0
 fi
 
 # echo "building last tag $LAST_TAG"
 # git checkout $LAST_TAG
-# ./node_modules/gulp/bin/gulp.js dist
+# ./node_modules/webpack/bin/webpack.js --config-register ~/dev/impact/babel.register.config.js
 #
 # echo "saving last tag build"
 # mkdir ./_tmp_dist
@@ -30,8 +30,8 @@ fi
 echo "building current branch"
 git checkout $CURRENT_BRANCH
 
-source ../padlock/kubernetes/namespaces/production/env.sh
-NODE_ENV=production ./node_modules/gulp/bin/gulp.js dist
+source ../kube/secrets/production.env.sh
+NODE_ENV=production ./node_modules/webpack/bin/webpack.js --config-register ~/dev/impact/babel.register.config.js
 
 # echo "restoring last tag dist"
 # cp -r ./dist/* ./_tmp_dist

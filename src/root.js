@@ -7,3 +7,8 @@ import colors from './colors'
 import config from './config'
 
 setup({ $app, Lang, Model, colors, config })
+
+if (module.hot) {
+  // webpack hmr
+  module.hot.accept()
+}

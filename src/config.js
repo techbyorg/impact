@@ -39,7 +39,7 @@ const isomorphic = {
   EMPTY_UUID: '00000000-0000-0000-0000-000000000000',
   CDN_URL,
   // d folder has longer cache
-  SCRIPTS_CDN_URL: 'https://fdn.uno/d/scripts', // FIXME
+  SCRIPTS_CDN_URL: 'https://docdn.tdn.one/d/scripts', // FIXME no subdomain
   USER_CDN_URL: 'https://fdn.uno/images', // FIXME
   FAVICON_URL: `${CDN_URL}/techby/favicon.png?1`,
   ICON_256_URL: `${CDN_URL}/techby/web_icon_256.png`,

@@ -57,7 +57,8 @@ export default function $dashboardPage ({ requestsStream }) {
 
   useMeta((org) => {
     // TODO: non-hardcoded
-    if (org?.slug === 'upchieve') {
+    // FIXME: org?.slug doesn't seem to be defined
+    if (org?.slug === 'upchieve' || router.getHost() === 'data.upchieve.org') {
       return {
         title: 'UPchieve Transparent Data',
         description: 'UPchieve is an EdTech nonprofit providing on-demand STEM tutoring + college counseling to underserved HS students in the U.S.'

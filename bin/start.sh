@@ -2,7 +2,7 @@
 export NODE_ENV=production
 
 # replacements necessary for serviceworker. bundle replacements are done before cdn in dist
-paths_dist=`node -r ./node_modules/@babel/register -e "process.stdout.write(require('./gulp_paths').dist)"`
+paths_dist=`node -r ./node_modules/@babel/register -e "process.stdout.write(require('./webpack_paths').dist)"`
 
 if [ ! -d $paths_dist ]; then
   echo "./dist directory not found. make sure to run 'npm run dist' beforehand"
