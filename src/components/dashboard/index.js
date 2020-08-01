@@ -63,6 +63,13 @@ export default function $home (props) {
 
     let isFirstPresetDateRange = true
 
+    // FIXME: rm when internal dashboard
+    const urlParams = new URLSearchParams(globalThis?.window?.location.search)
+    const hackPw = urlParams.get('secret') || cookie.get('hackPw')
+    if (hackPw) {
+      cookie.set('hackPw', hackPw)
+    }
+
     return {
       // TODO: uncomment when fixed in preact (and rm cookie.set from calendar)
       // https://github.com/preactjs/preact/pull/2570
@@ -134,7 +141,10 @@ export default function $home (props) {
         rx.tap(() => { isLoadingStream.next(true) }),
         rx.switchMap(([startDate, endDate, timeScale, dashboard]) => {
           return model.block.getAllByDashboardId(dashboard.id, {
-            startDate, endDate, timeScale
+            startDate,
+            endDate,
+            timeScale,
+            hackPw // FIXME: rm when we have internal dashboards
           })
         }),
         rx.tap(() => { isLoadingStream.next(false) })

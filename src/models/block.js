@@ -3,16 +3,17 @@ export default class Block {
     this.auth = auth
   }
 
-  getAllByDashboardId = (dashboardId, { startDate, endDate, timeScale }) => {
+  getAllByDashboardId = (dashboardId, { startDate, endDate, timeScale, hackPw }) => {
     return this.auth.stream({
       query: `
         query BlocksByDashboardId(
           $dashboardId: ID!
+          $hackPw: String # FIXME: rm after internal dashboards
           $startDate: String
           $endDate: String
           $timeScale: String
         ) {
-          blocks(dashboardId: $dashboardId) {
+          blocks(dashboardId: $dashboardId, hackPw: $hackPw) {
             nodes {
               id
               name
@@ -43,7 +44,7 @@ export default class Block {
           }
         }
 `,
-      variables: { dashboardId, startDate, endDate, timeScale },
+      variables: { dashboardId, startDate, endDate, timeScale, hackPw },
       pull: 'blocks'
     })
   }
