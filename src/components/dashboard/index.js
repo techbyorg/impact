@@ -1,4 +1,4 @@
-import { z, classKebab, useContext, useMemo, useStream } from 'zorium'
+import { z, classKebab, useContext, useEffect, useMemo, useStream } from 'zorium'
 import * as _ from 'lodash-es'
 import * as Rx from 'rxjs'
 import * as rx from 'rxjs/operators'
@@ -10,7 +10,6 @@ import $inputDateRange from 'frontend-shared/components/input_date_range'
 import $importedInlineSvg from 'frontend-shared/components/imported_inline_svg'
 import $masonryGrid from 'frontend-shared/components/masonry_grid'
 import $spinner from 'frontend-shared/components/spinner'
-import DateService from 'frontend-shared/services/date'
 import { graphColors } from 'frontend-shared/colors'
 
 import $block from '../block'
@@ -19,75 +18,28 @@ import context from '../../context'
 
 if (typeof window !== 'undefined') { require('./index.styl') }
 
-const DATE_DEBOUNCE_TIME_MS = 10
-
 export default function $home (props) {
-  const { orgStream, dashboardSlugStream, dashboardStream } = props
+  const {
+    orgStream, dashboardSlugStream, dashboardStream, partnerStream,
+    isLoadingStream, startDateStreams, endDateStreams, timeScaleStream
+  } = props
   const { model, lang, colors, router, cookie } = useContext(context)
 
   const {
-    startDateStream, endDateStream, presetDateRangeStream, timeScaleStream,
-    gColors, isMenuVisibleStream, isLoadingStream, dashboardsStream,
-    blocksStream
+    presetDateRangeStream, gColors, isMenuVisibleStream, dashboardsStream,
+    partnersStream, partnerStreams
   } = useMemo(() => {
-    const timeScaleStream = new Rx.BehaviorSubject(
-      cookie.get('timeScale') || 'month'
-    )
-    const initialPresetDateRange = cookie.get('presetDateRange') || 'last6Months'
-    const presetDateRangeStream = new Rx.BehaviorSubject(initialPresetDateRange)
-    // TODO: get from url. broken with preact (rerender suspense bug)
-    // https://github.com/preactjs/preact/pull/2570
-    // ^^ "fix" was merged in, but still breaks (this time when trying
-    // to dismount lazy component)
-    const presetDates = DateService.getDatesFromPresetDateRange(
-      initialPresetDateRange
-    )
-
-    const startDateStream = new Rx.BehaviorSubject(
-      cookie.get('startDate') ||
-        DateService.format(presetDates.startDate, 'yyyy-mm-dd')
-    )
-    const endDateStream = new Rx.BehaviorSubject(
-      cookie.get('endDate') ||
-        DateService.format(presetDates.endDate, 'yyyy-mm-dd')
-    )
-
-    const datesAndDashboardStream = Rx.combineLatest(
-      startDateStream,
-      endDateStream,
-      timeScaleStream,
-      dashboardStream
-    // if timeScaleStream and dates change on same action (eg the
-    // preset date dropdown), combine both
-    ).pipe(rx.debounceTime(DATE_DEBOUNCE_TIME_MS))
+    const partnerStreams = new Rx.ReplaySubject(1)
+    partnerStreams.next(partnerStream)
 
     let isFirstPresetDateRange = true
-
-    // FIXME: rm when internal dashboard
-    const urlParams = new URLSearchParams(globalThis?.window?.location.search)
-    const hackPw = urlParams.get('secret') || cookie.get('hackPw')
-    if (hackPw) {
-      cookie.set('hackPw', hackPw)
-    }
+    const initialPresetDateRange = cookie.get('presetDateRange') || 'last6Months'
+    const presetDateRangeStream = new Rx.BehaviorSubject(initialPresetDateRange)
 
     return {
-      // TODO: uncomment when fixed in preact (and rm cookie.set from calendar)
-      // https://github.com/preactjs/preact/pull/2570
-      // ^^ "fix" was merged in, but still breaks (this time when trying
-      // to dismount lazy component)
-      // startDateStream: startDateStream.pipe(
-      //   rx.tap((startDate) => {
-      //     if (!globalThis.window) return
-      //     startDate && cookie.set('startDate', startDate)
-      //   })
-      // ),
-      // endDateStream: endDateStream.pipe(
-      //   rx.tap((endDate) => {
-      //     if (!globalThis.window) return
-      //     endDate && cookie.set('endDate', endDate)
-      //   })
-      // ),
       presetDateRangeStream: presetDateRangeStream.pipe(
+      // TODO: could try to move this into useEffect. need to figure out
+      // solution for isFirstPresetDateRange
         rx.tap((presetDateRange) => {
           if (!globalThis.window) return
           // timeout because the start and endDate cookies are also being
@@ -126,74 +78,98 @@ export default function $home (props) {
           timeScale && cookie.set('timeScale', timeScale)
         })
       ),
-      startDateStream,
-      endDateStream,
       // presetDateRangeStream,
       // timeScaleStream,
       gColors: _.map(graphColors, 'graph'),
       isMenuVisibleStream: new Rx.BehaviorSubject(false),
-      isLoadingStream: new Rx.BehaviorSubject(false),
       dashboardsStream: orgStream.pipe(
         rx.switchMap((org) => model.dashboard.getAllByOrgId(org.id))
       ),
-      blocksStream: datesAndDashboardStream.pipe(
-        rx.filter(([startDate, endDate, dashboard]) => startDate && endDate),
-        rx.tap(() => { isLoadingStream.next(true) }),
-        rx.switchMap(([startDate, endDate, timeScale, dashboard]) => {
-          return model.block.getAllByDashboardId(dashboard.id, {
-            startDate,
-            endDate,
-            timeScale,
-            hackPw // FIXME: rm when we have internal dashboards
-          })
-        }),
-        rx.tap(() => { isLoadingStream.next(false) })
-      )
+      partnersStream: orgStream.pipe(
+        rx.switchMap((org) =>
+          // FIXME: rm hackPw when internal dash
+          model.partner.getAllByOrgId(org.id, cookie.get('hackPw'))
+        )
+      ),
+      partnerStreams
     }
   }, [])
 
   const {
-    isMenuVisible, isLoading, dashboard, dashboardSlug, dashboards, org, blocks,
-    pinnedBlock, timeScale
+    startDate, endDate, isMenuVisible, isLoading, dashboard, dashboardSlug,
+    dashboards, partners, org, pinnedBlock, timeScale
   } = useStream(() => ({
+    startDate: startDateStreams.pipe(rx.switchAll()),
+    endDate: startDateStreams.pipe(rx.switchAll()),
     isMenuVisible: isMenuVisibleStream,
     isLoading: isLoadingStream,
     dashboard: dashboardStream,
     dashboardSlug: dashboardSlugStream,
     dashboards: dashboardsStream,
+    partners: partnersStream,
     org: orgStream,
-    blocks: blocksStream.pipe(
-      rx.map((blocks) =>
-        _.filter(blocks.nodes, ({ settings }) => !settings?.isPinned)
+    pinnedBlock: dashboardStream.pipe(
+      rx.map((dashboard) =>
+        _.find(dashboard?.blocks.nodes, ({ settings }) => settings?.isPinned)
       )
-    ),
-    pinnedBlock: blocksStream.pipe(
-      rx.map((blocks) => _.find(blocks.nodes, ({ settings }) => settings?.isPinned))
     ),
     presetDateRange: presetDateRangeStream, // only sub'd for side-effect
     timeScale: timeScaleStream
   }))
 
+  if (globalThis.window) {
+    useEffect(() => {
+      startDate && cookie.set('startDate', startDate)
+      endDate && cookie.set('startDate', startDate)
+    }, [startDate, endDate])
+  }
+
   const currentDashboardSlug = dashboardSlug || dashboard?.slug
 
-  console.log('render dashboard')
+  const blocks = dashboard?.blocks.nodes
 
-  const isHackClub = org?.slug === 'hackclub' // FIXME: non-hardcoded logo
+  console.log('render dashboard', dashboard, blocks, pinnedBlock)
+
+  const isHackClub = org?.slug === 'hackclub' // TODO: a way to not hardcode their type of logo?
+  const logo = org?.slug === 'hackclub'
+    ? 'https://assets.hackclub.com/flag-orpheus-top.svg'
+    : org?.slug === 'upchieve' && 'https://static1.squarespace.com/static/57c0d8d1e58c622e8b6d5328/t/58e6f7d3cd0f6890d14a989b/1596229917902/?format=600w'
 
   return z('.z-dashboard', {
-    className: classKebab({ isMenuVisible, isHackClub })
+    className: classKebab({ isMenuVisible, hasLogo: logo, isHackClub })
   }, [
     z('.menu', [
-      z('.logo', org && [
-        // TODO: non-hardcoded
-        org.slug === 'hackclub'
-          ? 'Hack Club'
-          : org.slug === 'upchieve'
-            ? 'UPchieve'
-            : org.slug === 'freeroam'
-              ? 'FreeRoam'
-              : '',
-        z('span.data', 'Data')
+      !_.isEmpty(partners?.nodes) && z('.partners', [
+        z($dropdown, {
+          onChange: (value) => {
+            router.go('orgPartner', {
+              orgSlug: org.slug,
+              partnerSlug: value
+            })
+          },
+          valueStreams: partnerStreams,
+          options: _.map(partners.nodes, ({ slug }) => ({
+            value: slug,
+            text: slug
+          }))
+        })
+      ]),
+      z('.logo', {
+        style: {
+          backgroundImage: logo && `url(${logo})`
+        }
+      }, [
+        z('.text', org && [
+          // TODO: non-hardcoded
+          org.slug === 'hackclub'
+            ? 'Hack Club'
+            : org.slug === 'upchieve'
+              ? 'UPchieve'
+              : org.slug === 'freeroam'
+                ? 'FreeRoam'
+                : '',
+          z('span.data', 'Data')
+        ])
       ]),
       z('.title', [
         z('.icon'),
@@ -270,7 +246,7 @@ export default function $home (props) {
           // select
           z('.date-range', [
             z($inputDateRange, {
-              startDateStream, endDateStream, presetDateRangeStream
+              startDateStreams, endDateStreams, presetDateRangeStream
             })
           ]),
           z('.time-scale', [

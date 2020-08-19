@@ -2,6 +2,7 @@ import { z, useContext, useMemo, useStream } from 'zorium'
 import * as Rx from 'rxjs'
 import * as rx from 'rxjs/operators'
 
+import DateService from 'frontend-shared/services/date'
 import useMeta from 'frontend-shared/services/use_meta'
 import useCssVariables from 'frontend-shared/services/use_css_variables'
 
@@ -10,11 +11,15 @@ import context from '../../context'
 
 if (typeof window !== 'undefined') { require('./index.styl') }
 
+const DATE_DEBOUNCE_TIME_MS = 10
+
 export default function $dashboardPage ({ requestsStream }) {
-  const { model, router, colors } = useContext(context)
+  const { model, router, colors, cookie } = useContext(context)
 
   const {
-    orgStream, orgSlugStream, dashboardSlugStream, dashboardStream
+    orgStream, orgSlugStream, dashboardSlugStream, partnerStream,
+    dashboardStream, isLoadingStream, startDateStreams, endDateStreams,
+    timeScaleStream
   } = useMemo(() => {
     const dashboardSlugStream = requestsStream.pipe(
       rx.map(({ route }) => route.params.dashboardSlug)
@@ -31,21 +36,96 @@ export default function $dashboardPage ({ requestsStream }) {
         }
       })
     )
-
+    const partnerSlugStream = requestsStream.pipe(
+      rx.map(({ route }) => route.params.partnerSlug)
+    )
     const orgStream = orgSlugStream.pipe(
       rx.switchMap((orgSlug) => {
         return model.org.getBySlug(orgSlug)
       })
     )
-    const orgAndDashboardSlug = Rx.combineLatest(orgStream, dashboardSlugStream)
+    const orgAndPartnerSlugStream = Rx.combineLatest(
+      orgStream, partnerSlugStream
+    )
+    const partnerStream = orgAndPartnerSlugStream.pipe(
+      rx.switchMap(([org, partnerSlug]) => {
+        if (partnerSlug) {
+          return model.partner.getByOrgIdAndSlug(org.id, partnerSlug)
+        } else {
+          return Rx.of(null)
+        }
+      })
+    )
+
+    const timeScaleStream = new Rx.BehaviorSubject(
+      cookie.get('timeScale') || 'month'
+    )
+    const initialPresetDateRange = cookie.get('presetDateRange') || 'last6Months'
+    const presetDates = DateService.getDatesFromPresetDateRange(
+      initialPresetDateRange
+    )
+
+    // TODO: get from url
+    const startDateStreams = new Rx.ReplaySubject(1)
+    startDateStreams.next(
+      Rx.of(
+        cookie.get('startDate') ||
+          DateService.format(presetDates.startDate, 'yyyy-mm-dd')
+      )
+    )
+    const endDateStreams = new Rx.ReplaySubject(1)
+    endDateStreams.next(
+      Rx.of(
+        cookie.get('endDate') ||
+          DateService.format(presetDates.endDate, 'yyyy-mm-dd')
+      )
+    )
+
+    const orgAndExtrasStream = Rx.combineLatest(
+      orgStream,
+      dashboardSlugStream,
+      partnerStream,
+      startDateStreams.pipe(rx.switchAll()),
+      endDateStreams.pipe(rx.switchAll()),
+      timeScaleStream
+    ).pipe(rx.debounceTime(DATE_DEBOUNCE_TIME_MS))
+
+    const isLoadingStream = new Rx.BehaviorSubject(false)
+
+    // FIXME: rm when internal dashboard
+    const urlParams = new URLSearchParams(globalThis?.window?.location.search)
+    const hackPw = urlParams.get('secret') || cookie.get('hackPw')
+    if (hackPw) {
+      cookie.set('hackPw', hackPw)
+    }
+
     return {
       orgStream,
       orgSlugStream,
       dashboardSlugStream,
-      dashboardStream: orgAndDashboardSlug.pipe(
-        rx.switchMap(([org, dashboardSlug]) => {
-          return model.dashboard.getByOrgIdAndSlug(org.id, dashboardSlug)
-        })
+      partnerStream,
+      startDateStreams,
+      endDateStreams,
+      timeScaleStream,
+      dashboardStream: orgAndExtrasStream.pipe(
+        rx.filter(([org, dashboardSlug, partner, startDate, endDate]) =>
+          startDate && endDate
+        ),
+        rx.tap(() => { isLoadingStream.next(true) }),
+        rx.switchMap((options) => {
+          const [
+            org, dashboardSlug, partner, startDate, endDate, timeScale
+          ] = options
+          console.log('get dash', options)
+          return model.dashboard.getByOrgIdAndSlug(org.id, dashboardSlug, {
+            segmentId: partner?.segmentId,
+            startDate,
+            endDate,
+            timeScale,
+            hackPw // FIXME: rm when we have internal dashboards
+          })
+        }),
+        rx.tap(() => { isLoadingStream.next(false) })
       )
     }
   }, [])
@@ -153,6 +233,15 @@ export default function $dashboardPage ({ requestsStream }) {
   }, [orgSlug])
 
   return z('.p-dashboard',
-    z($dashboard, { orgStream, dashboardSlugStream, dashboardStream })
+    z($dashboard, {
+      orgStream,
+      dashboardSlugStream,
+      partnerStream,
+      dashboardStream,
+      isLoadingStream,
+      startDateStreams,
+      endDateStreams,
+      timeScaleStream
+    })
   )
 }

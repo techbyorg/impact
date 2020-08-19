@@ -3,15 +3,59 @@ export default class Dashboard {
     this.auth = auth
   }
 
-  getByOrgIdAndSlug = (orgId, slug) => {
+  getByOrgIdAndSlug = (orgId, slug, options) => {
+    const {
+      hackPw, segmentId, startDate, endDate, timeScale
+    } = options
     return this.auth.stream({
       query: `
-        query DashboardByOrgIdAndSlug($orgId: String, $slug: String) {
-          dashboard(orgId: $orgId, slug: $slug) {
+        query DashboardByOrgIdAndSlug(
+          $orgId: String
+          $slug: String
+          # $dashboardId: ID!
+          $segmentId: ID
+          $hackPw: String # FIXME: rm after internal dashboards
+          $startDate: String
+          $endDate: String
+          $timeScale: String
+        ) {
+          dashboard(orgId: $orgId, slug: $slug, hackPw: $hackPw) {
             id, slug, name
+            blocks {
+              nodes {
+                id
+                name
+                settings
+                metrics {
+                  nodes {
+                    name
+                    unit
+                    dimensions {
+                      nodes {
+                        slug
+                        datapoints(
+                          segmentId: $segmentId
+                          startDate: $startDate
+                          endDate: $endDate
+                          timeScale: $timeScale
+                        ) {
+                          nodes {
+                            scaledTime
+                            dimensionValue
+                            count
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }`,
-      variables: { orgId, slug },
+      variables: {
+        orgId, slug, hackPw, segmentId, startDate, endDate, timeScale
+      },
       pull: 'dashboard'
     })
   }

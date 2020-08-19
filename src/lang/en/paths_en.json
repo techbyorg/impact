@@ -2,6 +2,8 @@
   "home": "/",
   "orgHome": "/org/:orgSlug",
   "orgDashboard": "/org/:orgSlug/dashboard/:dashboardSlug",
+  "orgDashboardWithPartner": "/org/:orgSlug/partner/:partnerSlug/dashboard/:dashboardSlug",
+  "orgPartner": "/org/:orgSlug/partner/:partnerSlug",
 
   "orgPrivacy": "/org/:orgSlug/privacy",
   "orgShell": "/org/:orgSlug/cache-shell",

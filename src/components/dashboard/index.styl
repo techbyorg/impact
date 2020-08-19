@@ -18,16 +18,23 @@ $pinnedBlockWidth = 300px
         border-top: none
         border-bottom: 5px solid getColor('$primaryMain')
 
-  &.is-hack-club // FIXME: non-hardcoded
+  &.has-logo
     > .menu
-      background-image: url('https://assets.hackclub.com/flag-orpheus-top.svg')
-      background-size: 116px auto
-      background-repeat: no-repeat
-      background-position: 30px 0
-      min-height: 48px
-
       > .logo
-        display: none
+        background-size: auto 100%
+        height: 52px
+        background-repeat: no-repeat
+        margin: 0 12px
+
+        > .text
+          display: none
+
+  &.is-hack-club
+    > .menu
+      > .logo
+        height: 68px
+        margin-top: -16px
+        margin-bottom: -8px
 
   > .menu
     background: getColor('$bgColor')
@@ -40,14 +47,13 @@ $pinnedBlockWidth = 300px
       font-h4()
       font-weight: 700
       color: getColor('$primaryMain')
-      margin: 0 12px
 
       > .data
         color: getColor('$bgText54')
 
     > .title
       font-h5()
-      margin: 48px 12px 0 12px
+      margin: 24px 12px 0 12px
       display: none
 
       > .icon
@@ -170,8 +176,12 @@ $pinnedBlockWidth = 300px
     display: grid
     grid-template-columns: 280px 1fr
 
+    &.has-logo
+      > .menu > .logo
+        margin: 12px
+
     > .menu
-      padding: 32px 12px
+      padding: 12px 12px 32px 12px
 
       > .title
         display: flex

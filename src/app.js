@@ -17,6 +17,8 @@ export default function $app (props) {
       home: $homePage,
       orgHome: $dashboardPage,
       orgDashboard: $dashboardPage,
+      orgDashboardWithPartner: $dashboardPage,
+      orgPartner: $dashboardPage,
 
       // duplicate for org routes too for custom domains to work
       // TODO: come up with better solution. currently we detect custom
