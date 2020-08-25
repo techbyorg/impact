@@ -227,6 +227,31 @@ export default function $dashboardPage ({ requestsStream }) {
         '--secondary-800': '#00695C',
         '--secondary-900': '#004D40'
       })
+    } else if (orgSlug === 'raisedbyus') {
+      return colors.getCssVariables({
+        '--primary-50': '#FCEAE3',
+        '--primary-100': '#F9CAB9',
+        '--primary-200': '#F5A78B',
+        '--primary-300': '#F0835D',
+        '--primary-400': '#ED693A',
+        '--primary-500': '#EA4E17',
+        '--primary-600': '#E74714',
+        '--primary-700': '#E43D11',
+        '--primary-800': '#E1350D',
+        '--primary-900': '#DB2507',
+        '--primary-main': '#EA4E17', // primary500
+        '--primary-main-8': 'rgba(234, 78, 23, 0.08)',
+        '--secondary-50': '#F2F1F0',
+        '--secondary-100': '#DFDBDA',
+        '--secondary-200': '#CAC3C1',
+        '--secondary-300': '#B4ABA8',
+        '--secondary-400': '#A49995',
+        '--secondary-500': '#948782',
+        '--secondary-600': '#8C7F7A',
+        '--secondary-700': '#81746F',
+        '--secondary-800': '#776A65',
+        '--secondary-900': '#655752'
+      })
     } else {
       return colors.getCssVariables()
     }
