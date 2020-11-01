@@ -125,10 +125,14 @@ export default function $home (props) {
   }
 
   const currentDashboardSlug = dashboardSlug || dashboard?.slug
-
   const blocks = dashboard?.blocks.nodes
 
-  console.log('render dashboard', dashboard, blocks, pinnedBlock)
+  const hasEditDashboardPermission = model.orgUser.hasPermission({
+    orgUser: org?.orgUser,
+    sourceType: 'impact-dashboard',
+    sourceId: dashboard?.id,
+    permissions: ['edit']
+  })
 
   const isHackClub = org?.slug === 'hackclub' // TODO: a way to not hardcode their type of logo?
   const logo = org?.slug === 'hackclub'
@@ -266,6 +270,7 @@ export default function $home (props) {
         pinnedBlock && z('.pinned-block', [
           z($block, {
             timeScale,
+            hasEditPermission: hasEditDashboardPermission,
             block: pinnedBlock,
             colors: [colors.getRawColor(colors.$primaryMain)].concat(gColors)
           })
@@ -282,15 +287,18 @@ export default function $home (props) {
               tablet: 0,
               desktop: 20
             },
-            $elements: _.map(blocks, (block) => {
-              return z('.block', [
-                z($block, {
-                  timeScale,
-                  block,
-                  colors: [colors.getRawColor(colors.$primaryMain)].concat(gColors)
-                })
-              ])
-            })
+            $elements: _.filter(_.map(blocks, (block) => {
+              if (!block.settings.isPinned) {
+                return z('.block', [
+                  z($block, {
+                    timeScale,
+                    hasEditPermission: hasEditDashboardPermission,
+                    block,
+                    colors: [colors.getRawColor(colors.$primaryMain)].concat(gColors)
+                  })
+                ])
+              }
+            }))
           })
         )
       ])

@@ -51,8 +51,6 @@ const isomorphic = {
   PUBLIC_API_URL: process.env.PUBLIC_PHIL_API_URL,
   API_HOST,
   API_PATH,
-  // also in free-roam
-  DEFAULT_PERMISSIONS: {},
   DEFAULT_NOTIFICATIONS: {},
   FIREBASE: {
     API_KEY: process.env.FIREBASE_API_KEY,

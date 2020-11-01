@@ -116,7 +116,6 @@ export default function $dashboardPage ({ requestsStream }) {
           const [
             org, dashboardSlug, partner, startDate, endDate, timeScale
           ] = options
-          console.log('get dash', options)
           return model.dashboard.getByOrgIdAndSlug(org.id, dashboardSlug, {
             segmentId: partner?.segmentId,
             startDate,
