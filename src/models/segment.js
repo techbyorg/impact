@@ -16,15 +16,15 @@ export default class Segment {
     })
   }
 
-  getAllByOrgId = (orgId, hackPw) => { // FIXME: rm hackPw when internal dash
+  getAllByOrgId = (orgId) => {
     return this.auth.stream({
       query: `
-        query Segments($orgId: ID!, $hackPw: String) {
-          segments(orgId: $orgId, hackPw: $hackPw) {
+        query Segments($orgId: ID!) {
+          segments(orgId: $orgId) {
             nodes { slug, name }
           }
         }`,
-      variables: { orgId, hackPw },
+      variables: { orgId },
       pull: 'segments'
     })
   }

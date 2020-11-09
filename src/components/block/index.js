@@ -12,7 +12,10 @@ import context from '../../context'
 
 if (typeof window !== 'undefined') { require('./index.styl') }
 
-export default function $block ({ timeScale, block, colors, hasEditPermission }) {
+export default function $block (props) {
+  const {
+    timeScale, block, colors, hasEditPermission, editingBlockIdStream
+  } = props
   const allColors = useContext(context).colors
 
   const $chart = block.settings.type === 'us-map'
@@ -33,7 +36,10 @@ export default function $block ({ timeScale, block, colors, hasEditPermission })
       hasEditPermission && z('.edit', z($icon, {
         icon: editIconPath,
         color: allColors.$bgText70,
-        size: '14px'
+        size: '14px',
+        onclick: () => {
+          editingBlockIdStream.next(block.id)
+        }
       }))
     ]),
     z($chart, { timeScale, block, colors })

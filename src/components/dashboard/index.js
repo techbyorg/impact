@@ -3,16 +3,18 @@ import * as _ from 'lodash-es'
 import * as Rx from 'rxjs'
 import * as rx from 'rxjs/operators'
 
-import $button from 'frontend-shared/components/button'
 import $dropdown from 'frontend-shared/components/dropdown'
+import $fab from 'frontend-shared/components/fab'
 import $icon from 'frontend-shared/components/icon'
 import $inputDateRange from 'frontend-shared/components/input_date_range'
-import $importedInlineSvg from 'frontend-shared/components/imported_inline_svg'
 import $masonryGrid from 'frontend-shared/components/masonry_grid'
 import $spinner from 'frontend-shared/components/spinner'
+import { addIconPath } from 'frontend-shared/components/icon/paths'
 import { graphColors } from 'frontend-shared/colors'
 
 import $block from '../block'
+import $newBlockDialog from '../new_block_dialog'
+import $sidebar from '../sidebar'
 import { bankIconPath } from '../icon/paths'
 import context from '../../context'
 
@@ -26,8 +28,8 @@ export default function $home (props) {
   const { model, lang, colors, router, cookie } = useContext(context)
 
   const {
-    presetDateRangeStream, gColors, isMenuVisibleStream, dashboardsStream,
-    partnersStream, partnerStreams
+    presetDateRangeStream, gColors, isMenuVisibleStream,
+    isNewBlockDialogVisibleStream, editingBlockIdStream
   } = useMemo(() => {
     const partnerStreams = new Rx.ReplaySubject(1)
     partnerStreams.next(partnerStream)
@@ -82,31 +84,20 @@ export default function $home (props) {
       // timeScaleStream,
       gColors: _.map(graphColors, 'graph'),
       isMenuVisibleStream: new Rx.BehaviorSubject(false),
-      dashboardsStream: orgStream.pipe(
-        rx.switchMap((org) => model.dashboard.getAllByOrgId(org.id))
-      ),
-      partnersStream: orgStream.pipe(
-        rx.switchMap((org) =>
-          // FIXME: rm hackPw when internal dash
-          model.partner.getAllByOrgId(org.id, cookie.get('hackPw'))
-        )
-      ),
-      partnerStreams
+      isNewBlockDialogVisibleStream: new Rx.BehaviorSubject(false),
+      editingBlockIdStream: new Rx.BehaviorSubject(null)
     }
   }, [])
 
   const {
-    startDate, endDate, isMenuVisible, isLoading, dashboard, dashboardSlug,
-    dashboards, partners, org, pinnedBlock, timeScale
+    startDate, endDate, isMenuVisible, isLoading, dashboard,
+    org, pinnedBlock, timeScale, isNewBlockDialogVisible, editingBlockId
   } = useStream(() => ({
     startDate: startDateStreams.pipe(rx.switchAll()),
     endDate: startDateStreams.pipe(rx.switchAll()),
     isMenuVisible: isMenuVisibleStream,
     isLoading: isLoadingStream,
     dashboard: dashboardStream,
-    dashboardSlug: dashboardSlugStream,
-    dashboards: dashboardsStream,
-    partners: partnersStream,
     org: orgStream,
     pinnedBlock: dashboardStream.pipe(
       rx.map((dashboard) =>
@@ -114,7 +105,9 @@ export default function $home (props) {
       )
     ),
     presetDateRange: presetDateRangeStream, // only sub'd for side-effect
-    timeScale: timeScaleStream
+    timeScale: timeScaleStream,
+    isNewBlockDialogVisible: isNewBlockDialogVisibleStream,
+    editingBlockId: editingBlockIdStream
   }))
 
   if (globalThis.window) {
@@ -124,7 +117,6 @@ export default function $home (props) {
     }, [startDate, endDate])
   }
 
-  const currentDashboardSlug = dashboardSlug || dashboard?.slug
   const blocks = dashboard?.blocks.nodes
 
   const hasEditDashboardPermission = model.orgUser.hasPermission({
@@ -134,93 +126,12 @@ export default function $home (props) {
     permissions: ['edit']
   })
 
-  const isHackClub = org?.slug === 'hackclub' // TODO: a way to not hardcode their type of logo?
-  const logo = org?.slug === 'hackclub'
-    ? 'https://assets.hackclub.com/flag-orpheus-top.svg'
-    : org?.slug === 'upchieve'
-      ? 'https://static1.squarespace.com/static/57c0d8d1e58c622e8b6d5328/t/58e6f7d3cd0f6890d14a989b/1596229917902/?format=600w'
-      : org?.slug === 'raisedbyus' && 'https://images.squarespace-cdn.com/content/5a88648ca9db09295b5d7a8c/1518888367733-ME6DC2YQFWXG595E6OGG/RAISEDBY.US_.jpg?format=1500w&content-type=image%2Fjpeg'
-
   return z('.z-dashboard', {
-    className: classKebab({ isMenuVisible, hasLogo: logo, isHackClub })
+    className: classKebab({ isMenuVisible })
   }, [
-    z('.menu', [
-      !_.isEmpty(partners?.nodes) && z('.partners', [
-        z($dropdown, {
-          onChange: (value) => {
-            router.go('orgPartner', {
-              orgSlug: org.slug,
-              partnerSlug: value
-            })
-          },
-          valueStreams: partnerStreams,
-          options: _.map(partners.nodes, ({ slug }) => ({
-            value: slug,
-            text: slug
-          }))
-        })
-      ]),
-      z('.logo', {
-        style: {
-          backgroundImage: logo && `url(${logo})`
-        }
-      }, [
-        z('.text', org && [
-          // TODO: non-hardcoded
-          org.slug === 'hackclub'
-            ? 'Hack Club'
-            : org.slug === 'upchieve'
-              ? 'UPchieve'
-              : org.slug === 'freeroam'
-                ? 'FreeRoam'
-                : '',
-          z('span.data', 'Data')
-        ])
-      ]),
-      z('.title', [
-        z('.icon'),
-        lang.get('general.dashboards')
-      ]),
-      z('.dashboards', _.map(dashboards?.nodes, ({ slug, name }) =>
-        router.linkIfHref(z('a.dashboard', {
-          className: classKebab({
-            isSelected: slug === currentDashboardSlug
-          }),
-          href: router.get('orgDashboard', {
-            orgSlug: org?.slug,
-            dashboardSlug: slug
-          })
-        }, name))
-      )),
-      z('.donate', [
-        z('.image', [
-          z($importedInlineSvg, {
-            importPromise: import(
-              /* webpackChunkName: "donate_svg" */
-              '../svgs/donate.js'
-            )
-          })
-        ]),
-        z('.text', lang.get('dashboard.donateText')),
-        z('.button', [
-          z($button, {
-            text: lang.get('general.donate'),
-            isSecondary: true,
-            isFullWidth: false,
-            onclick: () => {
-              // TODO: non-hardcoded
-              if (org?.slug === 'hackclub') {
-                router.openLink('https://hackclub.com/donate/')
-              } else if (org?.slug === 'freeroam') {
-                router.openLink('https://freeroam.app/donate')
-              } else {
-                router.openLink('https://secure.givelively.org/donate/upchieve')
-              }
-            }
-          })
-        ])
-      ])
-    ]),
+    z($sidebar, {
+      orgStream, dashboardSlugStream, partnerStream, isMenuVisibleStream
+    }),
     z('.content', [
       z('.top', {
         onclick: () => { isMenuVisibleStream.next(!isMenuVisible) }
@@ -272,6 +183,7 @@ export default function $home (props) {
             timeScale,
             hasEditPermission: hasEditDashboardPermission,
             block: pinnedBlock,
+            editingBlockIdStream,
             colors: [colors.getRawColor(colors.$primaryMain)].concat(gColors)
           })
         ]),
@@ -294,6 +206,7 @@ export default function $home (props) {
                     timeScale,
                     hasEditPermission: hasEditDashboardPermission,
                     block,
+                    editingBlockIdStream,
                     colors: [colors.getRawColor(colors.$primaryMain)].concat(gColors)
                   })
                 ])
@@ -302,6 +215,22 @@ export default function $home (props) {
           })
         )
       ])
-    ])
+    ]),
+    z('.add', z($fab, {
+      icon: addIconPath,
+      isInverted: true,
+      onclick: () => {
+        isNewBlockDialogVisibleStream.next(true)
+      }
+    })),
+    (editingBlockId || isNewBlockDialogVisible) &&
+      z($newBlockDialog, {
+        dashboardId: dashboard?.id,
+        blockId: editingBlockId,
+        onClose: () => {
+          editingBlockIdStream.next(null)
+          isNewBlockDialogVisibleStream.next(false)
+        }
+      })
   ])
 }

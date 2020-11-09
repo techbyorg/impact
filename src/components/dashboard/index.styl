@@ -11,94 +11,9 @@ $pinnedBlockWidth = 300px
   -webkit-overflow-scrolling: touch
 
   &.is-menu-visible
-    > .menu > .dashboards
-      display: block
-
     > .content > .top > .name > .arrow
         border-top: none
         border-bottom: 5px solid getColor('$primaryMain')
-
-  &.has-logo
-    > .menu
-      > .logo
-        background-size: contain
-        height: 52px
-        background-repeat: no-repeat
-        margin: 0 12px
-
-        > .text
-          display: none
-
-  &.is-hack-club
-    > .menu
-      > .logo
-        height: 68px
-        margin-top: -16px
-        margin-bottom: -8px
-
-  > .menu
-    background: getColor('$bgColor')
-    padding: 16px 16px 0 16px
-    border-right: 1px solid getColor('$bgText12')
-    display: flex
-    flex-direction: column
-
-    > .logo
-      font-h4()
-      font-weight: 700
-      color: getColor('$primaryMain')
-
-      > .data
-        color: getColor('$bgText54')
-
-    > .title
-      font-h5()
-      margin: 24px 12px 0 12px
-      display: none
-
-      > .icon
-        width: 22px
-        height: 21px
-        background: url($cdnUrl + '/impact/chart.svg')
-        margin-right: 12px
-        margin-top: 2px
-
-    > .dashboards
-      margin-top: 24px
-      display: none
-
-      > .dashboard
-        font-subtitle2()
-        padding: 12px
-        display: block
-        border-radius: 6px
-
-        &:hover
-          background: getColor('$bgColorAlt1')
-
-        &.is-selected
-          background: getColor('$primaryMain8')
-          color: getColor('$primaryMain')
-
-    > .donate
-      display: none
-      padding: 0 24px 24px 24px
-      margin: auto 16px 0 16px
-      background: getColor('$bgColorAlt1')
-      border: 1px solid getColor('$bgText12')
-      border-radius: 20px
-      text-align: center
-      overflow: hidden
-
-      > .image
-        width: 109px
-        height: 132px
-        margin: -4px auto 0 auto
-
-      > .text
-        font-subtitle1(medium)
-        margin-top: 20px
-        margin-bottom: 20px
 
   > .content
     > .top
@@ -172,25 +87,14 @@ $pinnedBlockWidth = 300px
       //   grid-template-columns: repeat(var(--repeat, auto-fit), minmax($columnMin , 1fr))
       //   grid-gap: 20px
 
+  > .add
+    position: fixed
+    bottom: 16px
+    right: 16px
+
   @media (min-width: $breakPointMedium)
     display: grid
     grid-template-columns: 280px 1fr
-
-    &.has-logo
-      > .menu > .logo
-        margin: 12px
-
-    > .menu
-      padding: 12px 12px 32px 12px
-
-      > .title
-        display: flex
-
-      > .dashboards
-        display: block
-
-      > .donate
-        display: block
 
     > .content
       min-height: 0

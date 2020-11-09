@@ -16,15 +16,15 @@ export default class Partner {
     })
   }
 
-  getAllByOrgId = (orgId, hackPw) => { // FIXME: rm hackPw when internal dash
+  getAllByOrgId = (orgId) => {
     return this.auth.stream({
       query: `
-        query Partners($orgId: ID!, $hackPw: String) {
-          partners(orgId: $orgId, hackPw: $hackPw) {
+        query Partners($orgId: ID!) {
+          partners(orgId: $orgId) {
             nodes { slug, name }
           }
         }`,
-      variables: { orgId, hackPw },
+      variables: { orgId },
       pull: 'partners'
     })
   }

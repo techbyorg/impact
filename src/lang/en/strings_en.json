@@ -11,6 +11,13 @@
   "home.inviteOnly": "Invite only",
   "home.requestAccess": "Request early access",
   "home.techBy": "Tech by a nonprofit, for nonprofits",
+  "newBlockDialog.title": "Add a block",
+  "newDashboardDialog.title": "Add a dashboard",
+  "sidebar.addDashboard": "Add dashboard",
+
+  "blockType.line": "Line",
+  "blockType.bar": "Bar",
+  "blockType.pie": "Pie",
 
   "frequencies.day": "Day",
   "frequencies.week": "Week",

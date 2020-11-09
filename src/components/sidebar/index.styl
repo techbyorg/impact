@@ -1,0 +1,118 @@
+@require '../../vars'
+
+.z-sidebar
+  background: getColor('$bgColor')
+  padding: 16px 16px 0 16px
+  border-right: 1px solid getColor('$bgText12')
+  display: flex
+  flex-direction: column
+
+  &.is-menu-visible
+    > .dashboards
+        display: block
+
+  &.has-logo
+    > .logo
+      background-size: contain
+      height: 52px
+      background-repeat: no-repeat
+      margin: 0 12px
+
+      > .text
+        display: none
+
+  &.is-hack-club
+    > .logo
+      height: 68px
+      margin-top: -16px
+      margin-bottom: -8px
+
+  > .logo
+    font-h4()
+    font-weight: 700
+    color: getColor('$primaryMain')
+
+    > .data
+      color: getColor('$bgText54')
+
+  > .title
+    font-h5()
+    margin: 24px 12px 0 12px
+    display: none
+
+    > .icon
+      width: 22px
+      height: 21px
+      background: url($cdnUrl + '/impact/chart.svg')
+      margin-right: 12px
+      margin-top: 2px
+
+  > .dashboards
+    margin-top: 24px
+    display: none
+
+    > .dashboard
+      font-subtitle2()
+      padding: 12px
+      display: block
+      border-radius: 6px
+
+      &:hover
+        background: getColor('$bgColorAlt1')
+
+      &.is-selected
+        background: getColor('$primaryMain8')
+        color: getColor('$primaryMain')
+
+    > .add-dashboard
+      display: flex
+      align-items: center
+      margin-top: 16px
+      cursor: pointer
+      padding: 12px
+      border-radius: 6px
+
+      &:hover
+        background: getColor('$bgColorAlt1')
+
+      > .icon
+        margin-right: 16px
+        border-radius: 50%
+        padding: 4px
+        border: 2px solid getColor('$bgText12')
+
+  > .donate
+    display: none
+    padding: 0 24px 24px 24px
+    margin: auto 16px 0 16px
+    background: getColor('$bgColorAlt1')
+    border: 1px solid getColor('$bgText12')
+    border-radius: 20px
+    text-align: center
+    overflow: hidden
+
+    > .image
+      width: 109px
+      height: 132px
+      margin: -4px auto 0 auto
+
+    > .text
+      font-subtitle1(medium)
+      margin-top: 20px
+      margin-bottom: 20px
+
+  @media (min-width: $breakPointMedium)
+    &.has-logo
+      > .logo
+        margin: 12px
+
+    padding: 12px 12px 32px 12px
+
+    > .title
+      display: flex
+
+    > .dashboards
+      display: block
+
+    > .donate
+      display: block

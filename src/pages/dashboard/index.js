@@ -92,13 +92,6 @@ export default function $dashboardPage ({ requestsStream }) {
 
     const isLoadingStream = new Rx.BehaviorSubject(false)
 
-    // FIXME: rm when internal dashboard
-    const urlParams = new URLSearchParams(globalThis?.window?.location.search)
-    const hackPw = urlParams.get('secret') || cookie.get('hackPw')
-    if (hackPw) {
-      cookie.set('hackPw', hackPw)
-    }
-
     return {
       orgStream,
       orgSlugStream,
@@ -120,8 +113,7 @@ export default function $dashboardPage ({ requestsStream }) {
             segmentId: partner?.segmentId,
             startDate,
             endDate,
-            timeScale,
-            hackPw // FIXME: rm when we have internal dashboards
+            timeScale
           })
         }),
         rx.tap(() => { isLoadingStream.next(false) })

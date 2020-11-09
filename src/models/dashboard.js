@@ -5,7 +5,7 @@ export default class Dashboard {
 
   getByOrgIdAndSlug = (orgId, slug, options) => {
     const {
-      hackPw, segmentId, startDate, endDate, timeScale
+      segmentId, startDate, endDate, timeScale
     } = options
     return this.auth.stream({
       query: `
@@ -14,12 +14,11 @@ export default class Dashboard {
           $slug: String
           # $dashboardId: ID!
           $segmentId: ID
-          $hackPw: String # FIXME: rm after internal dashboards
           $startDate: String
           $endDate: String
           $timeScale: String
         ) {
-          dashboard(orgId: $orgId, slug: $slug, hackPw: $hackPw) {
+          dashboard(orgId: $orgId, slug: $slug) {
             id, slug, name
             blocks {
               nodes {
@@ -54,7 +53,7 @@ export default class Dashboard {
           }
         }`,
       variables: {
-        orgId, slug, hackPw, segmentId, startDate, endDate, timeScale
+        orgId, slug, segmentId, startDate, endDate, timeScale
       },
       pull: 'dashboard'
     })
@@ -72,5 +71,21 @@ export default class Dashboard {
       variables: { orgId },
       pull: 'dashboards'
     })
+  }
+
+  upsert = ({ name }) => {
+    return this.auth.call({
+      query: `
+        mutation DashboardUpsert(
+          $name: String!
+        ) {
+          dashboardUpsert(name: $name) {
+            name
+          }
+        }
+`,
+      variables: { name },
+      pull: 'dashboard'
+    }, { invalidateAll: true })
   }
 }

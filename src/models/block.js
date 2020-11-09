@@ -4,14 +4,13 @@ export default class Block {
   }
 
   getAllByDashboardId = (dashboardId, options) => {
-    const { segmentId, startDate, endDate, timeScale, hackPw } = options
+    const { segmentId, startDate, endDate, timeScale } = options
 
     return this.auth.stream({
       query: `
         query BlocksByDashboardId(
           $dashboardId: ID!
           $segmentId: ID
-          $hackPw: String # FIXME: rm after internal dashboards
           $startDate: String
           $endDate: String
           $timeScale: String
@@ -19,8 +18,27 @@ export default class Block {
 
         }
 `,
-      variables: { dashboardId, segmentId, startDate, endDate, timeScale, hackPw },
+      variables: { dashboardId, segmentId, startDate, endDate, timeScale },
       pull: 'blocks'
     })
+  }
+
+  upsert = ({ name, dashboardId, metricIds, settings }) => {
+    return this.auth.call({
+      query: `
+        mutation BlockUpsert(
+          $name: String!
+          $dashboardId: ID!
+          $metricIds: JSON!
+          $settings: JSON
+        ) {
+          blockUpsert(name: $name, dashboardId: $dashboardId, metricIds: $metricIds, settings: $settings) {
+            name
+          }
+        }
+`,
+      variables: { name, dashboardId, metricIds, settings },
+      pull: 'block'
+    }, { invalidateAll: true })
   }
 }
