@@ -11,8 +11,12 @@
   "home.inviteOnly": "Invite only",
   "home.requestAccess": "Request early access",
   "home.techBy": "Tech by a nonprofit, for nonprofits",
+  "editOrgUserDialog.title": "Edit user",
   "newBlockDialog.title": "Add a block",
+  "newBlockDialog.private": "Keep this block private",
+  "newBlockDialog.privateDescription": "Only you will be able to see it",
   "newDashboardDialog.title": "Add a dashboard",
+  "orgUsers.description": "Find all of the accounts you’ve invited and their associated roles",
   "sidebar.addDashboard": "Add dashboard",
 
   "blockType.line": "Line",

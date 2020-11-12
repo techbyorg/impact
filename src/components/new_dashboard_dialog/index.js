@@ -1,5 +1,6 @@
 import { z, useContext, useMemo, useStream } from 'zorium'
 import * as Rx from 'rxjs'
+import * as rx from 'rxjs/operators'
 
 import $button from 'frontend-shared/components/button'
 import $dialog from 'frontend-shared/components/dialog'
@@ -14,18 +15,24 @@ if (typeof window !== 'undefined' && window !== null) {
 export default function $newDashboardDialog ({ dashboardId, onClose }) {
   const { lang, model } = useContext(context)
 
-  const { nameStream } = useMemo(() => {
+  const { nameStreams } = useMemo(() => {
+    const dashboardStream = dashboardId && model.dashboard.getById(dashboardId)
+    const nameStreams = new Rx.ReplaySubject(1)
+    dashboardId
+      ? nameStreams.next(dashboardStream.pipe(rx.map((dashboard) => dashboard.name)))
+      : nameStreams.next(Rx.of(''))
     return {
-      nameStream: new Rx.BehaviorSubject('')
+      nameStreams
     }
   }, [])
 
   const { name } = useStream(() => ({
-    name: nameStream
+    name: nameStreams.pipe(rx.switchAll())
   }))
 
   const createDashboard = async () => {
     await model.dashboard.upsert({
+      id: dashboardId,
       name: name
     })
     onClose()
@@ -39,7 +46,7 @@ export default function $newDashboardDialog ({ dashboardId, onClose }) {
         z('.z-new-dashboard-dialog_content', [
           z('.content', [
             z($input, {
-              valueStream: nameStream,
+              valueStreams: nameStreams,
               placeholder: lang.get('general.name'),
               type: 'text'
             })

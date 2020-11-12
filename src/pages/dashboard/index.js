@@ -5,7 +5,9 @@ import * as rx from 'rxjs/operators'
 import DateService from 'frontend-shared/services/date'
 import useMeta from 'frontend-shared/services/use_meta'
 import useCssVariables from 'frontend-shared/services/use_css_variables'
+import $appBar from 'frontend-shared/components/app_bar'
 
+import $appBarUserMenu from '../../components/app_bar_user_menu'
 import $dashboard from '../../components/dashboard'
 import context from '../../context'
 
@@ -248,7 +250,11 @@ export default function $dashboardPage ({ requestsStream }) {
     }
   }, [orgSlug])
 
-  return z('.p-dashboard',
+  return z('.p-dashboard', [
+    z($appBar, {
+      hasLogo: true,
+      $topRightButton: z($appBarUserMenu)
+    }),
     z($dashboard, {
       orgStream,
       dashboardSlugStream,
@@ -259,5 +265,5 @@ export default function $dashboardPage ({ requestsStream }) {
       endDateStreams,
       timeScaleStream
     })
-  )
+  ])
 }

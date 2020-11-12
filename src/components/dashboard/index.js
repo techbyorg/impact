@@ -9,11 +9,13 @@ import $icon from 'frontend-shared/components/icon'
 import $inputDateRange from 'frontend-shared/components/input_date_range'
 import $masonryGrid from 'frontend-shared/components/masonry_grid'
 import $spinner from 'frontend-shared/components/spinner'
-import { addIconPath } from 'frontend-shared/components/icon/paths'
+import { addIconPath, editIconPath } from 'frontend-shared/components/icon/paths'
 import { graphColors } from 'frontend-shared/colors'
 
 import $block from '../block'
+import $partnersDropdown from '../partners_dropdown'
 import $newBlockDialog from '../new_block_dialog'
+import $newDashboardDialog from '../new_dashboard_dialog'
 import $sidebar from '../sidebar'
 import { bankIconPath } from '../icon/paths'
 import context from '../../context'
@@ -29,7 +31,8 @@ export default function $home (props) {
 
   const {
     presetDateRangeStream, gColors, isMenuVisibleStream,
-    isNewBlockDialogVisibleStream, editingBlockIdStream
+    isNewBlockDialogVisibleStream, editingBlockIdStream,
+    isNewDashboardDialogVisibleStream, editingDashboardIdStream
   } = useMemo(() => {
     const partnerStreams = new Rx.ReplaySubject(1)
     partnerStreams.next(partnerStream)
@@ -85,13 +88,16 @@ export default function $home (props) {
       gColors: _.map(graphColors, 'graph'),
       isMenuVisibleStream: new Rx.BehaviorSubject(false),
       isNewBlockDialogVisibleStream: new Rx.BehaviorSubject(false),
-      editingBlockIdStream: new Rx.BehaviorSubject(null)
+      editingBlockIdStream: new Rx.BehaviorSubject(null),
+      isNewDashboardDialogVisibleStream: new Rx.BehaviorSubject(false),
+      editingDashboardIdStream: new Rx.BehaviorSubject(null)
     }
   }, [])
 
   const {
     startDate, endDate, isMenuVisible, isLoading, dashboard,
-    org, pinnedBlock, timeScale, isNewBlockDialogVisible, editingBlockId
+    org, pinnedBlock, timeScale, isNewBlockDialogVisible, editingBlockId,
+    isNewDashboardDialogVisible, editingDashboardId
   } = useStream(() => ({
     startDate: startDateStreams.pipe(rx.switchAll()),
     endDate: startDateStreams.pipe(rx.switchAll()),
@@ -107,7 +113,9 @@ export default function $home (props) {
     presetDateRange: presetDateRangeStream, // only sub'd for side-effect
     timeScale: timeScaleStream,
     isNewBlockDialogVisible: isNewBlockDialogVisibleStream,
-    editingBlockId: editingBlockIdStream
+    editingBlockId: editingBlockIdStream,
+    isNewDashboardDialogVisible: isNewDashboardDialogVisibleStream,
+    editingDashboardId: editingDashboardIdStream
   }))
 
   if (globalThis.window) {
@@ -130,16 +138,34 @@ export default function $home (props) {
     className: classKebab({ isMenuVisible })
   }, [
     z($sidebar, {
-      orgStream, dashboardSlugStream, partnerStream, isMenuVisibleStream
+      orgStream,
+      dashboardSlugStream,
+      isMenuVisibleStream,
+      isNewDashboardDialogVisibleStream,
+      hasEditDashboardPermission
     }),
     z('.content', [
       z('.top', {
         onclick: () => { isMenuVisibleStream.next(!isMenuVisible) }
       }, [
-        z('.sup', lang.get('general.dashboard') + ':'),
-        z('.name', [
-          dashboard?.name,
-          z('.arrow')
+        z('.info', [
+          z('.sup', lang.get('general.dashboard') + ':'),
+          z('.name', [
+            dashboard?.name,
+            z('.arrow')
+          ])
+        ]),
+        z('.right', [
+          z('.partners-dropdown', z($partnersDropdown, { partnerStream })),
+          hasEditDashboardPermission && z($icon, {
+            icon: editIconPath,
+            isCircled: true,
+            color: colors.$bgText60,
+            onclick: () => {
+              editingDashboardIdStream.next(dashboard.id)
+              isNewDashboardDialogVisibleStream.next(true)
+            }
+          })
         ])
       ]),
       z('.data', [
@@ -216,7 +242,7 @@ export default function $home (props) {
         )
       ])
     ]),
-    z('.add', z($fab, {
+    hasEditDashboardPermission && z('.add', z($fab, {
       icon: addIconPath,
       isInverted: true,
       onclick: () => {
@@ -231,6 +257,12 @@ export default function $home (props) {
           editingBlockIdStream.next(null)
           isNewBlockDialogVisibleStream.next(false)
         }
-      })
+      }),
+    isNewDashboardDialogVisible && z($newDashboardDialog, {
+      dashboardId: editingDashboardId,
+      onClose: () => {
+        isNewDashboardDialogVisibleStream.next(false)
+      }
+    })
   ])
 }

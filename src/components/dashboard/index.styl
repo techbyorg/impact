@@ -16,33 +16,43 @@ $pinnedBlockWidth = 300px
         border-bottom: 5px solid getColor('$primaryMain')
 
   > .content
+    padding: 32px
+    overflow: auto
+    -webkit-overflow-scrolling: touch
+
     > .top
-      padding: 24px 30px
-      background: getColor('$bgColor')
-      border-bottom: 1px solid getColor('$bgText12')
+      display: flex
+      align-items: center
+      margin-bottom: 16px
 
-      > .sup
-        font-subtitle2(medium)
+      > .info
+        > .sup
+          font-subtitle2(medium)
 
-      > .name
-        font-h5()
-        position: relative
-        display: inline-block
-        padding-right: 24px
+        > .name
+          font-h5()
+          position: relative
+          display: inline-block
+          padding-right: 24px
 
-        > .arrow
-          position: absolute
-          bottom: 12px
-          right: 4px
-          width: 0
-          height: 0
-          border-left: 5px solid transparent
-          border-right: 5px solid transparent
-          border-top: 5px solid getColor('$primaryMain')
+          > .arrow
+            position: absolute
+            bottom: 12px
+            right: 4px
+            width: 0
+            height: 0
+            border-left: 5px solid transparent
+            border-right: 5px solid transparent
+            border-top: 5px solid getColor('$primaryMain')
+
+      > .right
+        display: flex
+        margin-left: auto
+
+        > .partners-dropdown
+          margin-right: 16px
 
     > .data
-      padding: 32px
-
       > .custom-message
         font-body1()
         margin-bottom: 32px
@@ -102,17 +112,16 @@ $pinnedBlockWidth = 300px
       flex-direction: column
 
       > .top
-        > .name
-          > .arrow
-            display: none
+        > .info
+          > .name
+            > .arrow
+              display: none
 
       > .data
         display: grid
         grid-template: 'custom-message custom-message' 'filters filters' 'blocks pinned-block' 'blocks .'
         grid-template-columns: 1fr $pinnedBlockWidth
         grid-column-gap: 32px
-        overflow: auto
-        -webkit-overflow-scrolling: touch
 
         > .custom-message
           grid-area: custom-message

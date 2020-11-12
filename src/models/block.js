@@ -14,30 +14,44 @@ export default class Block {
           $startDate: String
           $endDate: String
           $timeScale: String
-        ) {
-
-        }
-`,
+        ) { }`,
       variables: { dashboardId, segmentId, startDate, endDate, timeScale },
       pull: 'blocks'
     })
   }
 
-  upsert = ({ name, dashboardId, metricIds, settings }) => {
+  getById = (id) => {
+    return this.auth.stream({
+      query: `
+        query BlockById(
+          $id: ID!
+        ) {
+          block(id: $id) {
+            id, name, metricIds, settings, defaultPermissions
+          }
+        }`,
+      variables: { id },
+      pull: 'block'
+    })
+  }
+
+  upsert = ({ id, name, dashboardId, metricIds, settings, defaultPermissions }) => {
     return this.auth.call({
       query: `
         mutation BlockUpsert(
+          $id: ID
           $name: String!
           $dashboardId: ID!
           $metricIds: JSON!
           $settings: JSON
+          $defaultPermissions: JSON
         ) {
-          blockUpsert(name: $name, dashboardId: $dashboardId, metricIds: $metricIds, settings: $settings) {
+          blockUpsert(id: $id, name: $name, dashboardId: $dashboardId, metricIds: $metricIds, settings: $settings, defaultPermissions: $defaultPermissions) {
             name
           }
         }
 `,
-      variables: { name, dashboardId, metricIds, settings },
+      variables: { id, name, dashboardId, metricIds, settings, defaultPermissions },
       pull: 'block'
     }, { invalidateAll: true })
   }

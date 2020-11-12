@@ -6,8 +6,10 @@
   "orgPartner": "/org/:orgSlug/partner/:partnerSlug",
   "orgSignIn": "/org/:orgSlug/sign-in",
   "orgPrivacy": "/org/:orgSlug/privacy",
+  "orgSettings": "/org/:orgSlug/settings",
   "orgShell": "/org/:orgSlug/cache-shell",
 
+  "invite": "/invite/:tokenStr",
   "privacy": "/privacy",
   "shell": "/cache-shell",
   "fourOhFour": "/*"

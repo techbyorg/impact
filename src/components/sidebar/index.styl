@@ -5,35 +5,12 @@
   padding: 16px 16px 0 16px
   border-right: 1px solid getColor('$bgText12')
   display: flex
+  min-height: 0
   flex-direction: column
 
   &.is-menu-visible
     > .dashboards
         display: block
-
-  &.has-logo
-    > .logo
-      background-size: contain
-      height: 52px
-      background-repeat: no-repeat
-      margin: 0 12px
-
-      > .text
-        display: none
-
-  &.is-hack-club
-    > .logo
-      height: 68px
-      margin-top: -16px
-      margin-bottom: -8px
-
-  > .logo
-    font-h4()
-    font-weight: 700
-    color: getColor('$primaryMain')
-
-    > .data
-      color: getColor('$bgText54')
 
   > .title
     font-h5()
@@ -48,8 +25,11 @@
       margin-top: 2px
 
   > .dashboards
+    flex1()
+    overflow-y: auto
     margin-top: 24px
     display: none
+    margin-bottom: 24px
 
     > .dashboard
       font-subtitle2()
@@ -102,10 +82,6 @@
       margin-bottom: 20px
 
   @media (min-width: $breakPointMedium)
-    &.has-logo
-      > .logo
-        margin: 12px
-
     padding: 12px 12px 32px 12px
 
     > .title

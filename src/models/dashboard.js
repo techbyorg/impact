@@ -59,32 +59,48 @@ export default class Dashboard {
     })
   }
 
-  getAllByOrgId = (orgId) => {
+  getAll = () => {
     console.warn('get dashboards', Date.now())
     return this.auth.stream({
       query: `
-        query Dashboards($orgId: String) {
-          dashboards(orgId: $orgId) {
+        query Dashboards {
+          dashboards {
             nodes { slug, name }
           }
         }`,
-      variables: { orgId },
+      // variables: {},
       pull: 'dashboards'
     })
   }
 
-  upsert = ({ name }) => {
+  getById = (id) => {
+    return this.auth.stream({
+      query: `
+        query DashboardById(
+          $id: ID!
+        ) {
+          dashboard(id: $id) {
+            id, name
+          }
+        }`,
+      variables: { id },
+      pull: 'dashboard'
+    })
+  }
+
+  upsert = ({ id, name }) => {
     return this.auth.call({
       query: `
         mutation DashboardUpsert(
+          $id: ID
           $name: String!
         ) {
-          dashboardUpsert(name: $name) {
+          dashboardUpsert(id: $id, name: $name) {
             name
           }
         }
 `,
-      variables: { name },
+      variables: { id, name },
       pull: 'dashboard'
     }, { invalidateAll: true })
   }

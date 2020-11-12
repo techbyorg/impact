@@ -8,7 +8,7 @@ export default class Partner {
       query: `
         query PartnerByOrgIdAndSlug($orgId: ID!, $slug: String) {
           partner(orgId: $orgId, slug: $slug) {
-            id, slug, name, segmentId
+            id, slug, name # , segmentId
           }
         }`,
       variables: { orgId, slug },
@@ -16,15 +16,15 @@ export default class Partner {
     })
   }
 
-  getAllByOrgId = (orgId) => {
+  getAll = () => {
     return this.auth.stream({
       query: `
-        query Partners($orgId: ID!) {
-          partners(orgId: $orgId) {
-            nodes { slug, name }
+        query Partners {
+          partners {
+            nodes { id, slug, name }
           }
         }`,
-      variables: { orgId },
+      // variables:  { orgId },
       pull: 'partners'
     })
   }

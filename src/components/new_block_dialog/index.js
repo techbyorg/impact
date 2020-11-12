@@ -7,6 +7,7 @@ import $button from 'frontend-shared/components/button'
 import $dialog from 'frontend-shared/components/dialog'
 import $dropdown from 'frontend-shared/components/dropdown'
 import $input from 'frontend-shared/components/input'
+import $toggle from 'frontend-shared/components/toggle'
 
 import context from '../../context'
 
@@ -14,40 +15,67 @@ if (typeof window !== 'undefined' && window !== null) {
   require('./index.styl')
 }
 
-export default function $newBlockDialog ({ dashboardId, onClose }) {
+export default function $newBlockDialog ({ dashboardId, blockId, onClose }) {
   const { lang, model } = useContext(context)
 
-  const { nameStream, metricStreams, metricsStream, typeStream } = useMemo(() => {
+  const {
+    blockStream, nameStreams, metricStreams, metricsStream, typeStreams,
+    isPrivateStreams
+  } = useMemo(() => {
+    const blockStream = blockId && model.block.getById(blockId)
+
+    const nameStreams = new Rx.ReplaySubject(1)
+    blockId
+      ? nameStreams.next(blockStream.pipe(rx.map((block) => block.name)))
+      : nameStreams.next(Rx.of(''))
+
+    const typeStreams = new Rx.ReplaySubject(1)
+    blockId
+      ? typeStreams.next(blockStream.pipe(rx.map((block) => block.settings?.type)))
+      : typeStreams.next(Rx.of(''))
+
     const metricsStream = model.metric.getAll().pipe(
       rx.map(({ nodes }) => nodes)
     )
     const metricStreams = new Rx.ReplaySubject(1)
-    metricStreams.next(metricsStream.pipe(rx.map((metrics) => metrics?.[0]?.id)))
+    blockId
+      ? metricStreams.next(blockStream.pipe(rx.map((block) => block.metricIds[0].id)))
+      : metricStreams.next(metricsStream.pipe(rx.map((metrics) => metrics?.[0]?.id)))
+
+    const isPrivateStreams = new Rx.ReplaySubject(1)
+    blockId
+      ? isPrivateStreams.next(blockStream.pipe(rx.map((block) => !block.defaultPermissions?.view)))
+      : isPrivateStreams.next(Rx.of(false))
+
     return {
-      nameStream: new Rx.BehaviorSubject(''),
+      blockStream,
+      nameStreams,
       metricStreams,
       metricsStream,
-      typeStream: new Rx.BehaviorSubject('line')
+      typeStreams,
+      isPrivateStreams
     }
   }, [])
 
-  const { name, metric, metrics, type } = useStream(() => ({
-    name: nameStream,
+  const { block, name, metric, metrics, type, isPrivate } = useStream(() => ({
+    block: blockStream,
+    name: nameStreams.pipe(rx.switchAll()),
     metric: metricStreams.pipe(rx.switchAll()),
     metrics: metricsStream,
-    type: typeStream
+    type: typeStreams.pipe(rx.switchAll()),
+    isPrivate: isPrivateStreams.pipe(rx.switchAll())
   }))
 
-  console.log('metrics', metrics, metric)
+  console.log('metrics', metrics, metric, block, type)
 
   const createBlock = async () => {
     await model.block.upsert({
+      id: block?.id,
       dashboardId: dashboardId,
       name: name,
       metricIds: [{ id: metric }],
-      settings: {
-        type: type
-      }
+      settings: { type },
+      defaultPermissions: _.defaults({ view: !isPrivate }, block.defaultPermissions)
     })
     onClose()
   }
@@ -55,16 +83,19 @@ export default function $newBlockDialog ({ dashboardId, onClose }) {
   return z('.z-new-block-dialog', [
     z($dialog, {
       onClose,
+      isWide: true,
       $title: lang.get('newBlockDialog.title'),
       $content:
         z('.z-new-block-dialog_content', [
           z('.input', z($input, {
-            valueStream: nameStream,
+            valueStreams: nameStreams,
             placeholder: lang.get('general.name'),
-            type: 'text'
+            type: 'text',
+            isFullWidth: true
           })),
           z('.input', z($dropdown, {
-            valueStream: typeStream,
+            valueStreams: typeStreams,
+            isFullWidth: true,
             options: [
               { value: 'line', text: lang.get('blockType.line') },
               { value: 'bar', text: lang.get('blockType.bar') },
@@ -73,10 +104,18 @@ export default function $newBlockDialog ({ dashboardId, onClose }) {
           })),
           z('.input', z($dropdown, {
             valueStreams: metricStreams,
+            isFullWidth: true,
             options: _.map(metrics, ({ id, name }) => ({
               value: id, text: name
             }))
-          }))
+          })),
+          z('.input', [
+            z('label.label', [
+              z('.title', lang.get('newBlockDialog.private')),
+              z('.description', lang.get('newBlockDialog.privateDescription'))
+            ]),
+            z($toggle, { isSelectedStreams: isPrivateStreams })
+          ])
         ]),
       $actions:
         z('.z-new-block-dialog_actions', [
