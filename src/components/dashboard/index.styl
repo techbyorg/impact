@@ -16,7 +16,7 @@ $pinnedBlockWidth = 300px
         border-bottom: 5px solid getColor('$primaryMain')
 
   > .content
-    padding: 32px
+    padding: 16px
     overflow: auto
     -webkit-overflow-scrolling: touch
 
@@ -74,7 +74,7 @@ $pinnedBlockWidth = 300px
         display: flex
         overflow-x: auto
         -webkit-overflow-scrolling: touch
-        margin-right: -32px
+        // margin-right: -32px // def don't do this on mobile
 
         > .time-scale
           margin-top: 0
@@ -106,10 +106,18 @@ $pinnedBlockWidth = 300px
     display: grid
     grid-template-columns: 280px 1fr
 
+    &.has-pinned-block
+      > .content > .data
+        display: grid
+        grid-template: 'custom-message custom-message' 'filters filters' 'blocks pinned-block' 'blocks .'
+        grid-template-columns: 1fr $pinnedBlockWidth
+        grid-column-gap: 32px
+
     > .content
       min-height: 0
       display: flex
       flex-direction: column
+      padding: 32px
 
       > .top
         > .info
@@ -118,11 +126,6 @@ $pinnedBlockWidth = 300px
               display: none
 
       > .data
-        display: grid
-        grid-template: 'custom-message custom-message' 'filters filters' 'blocks pinned-block' 'blocks .'
-        grid-template-columns: 1fr $pinnedBlockWidth
-        grid-column-gap: 32px
-
         > .custom-message
           grid-area: custom-message
 

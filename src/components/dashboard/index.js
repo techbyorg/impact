@@ -135,7 +135,7 @@ export default function $home (props) {
   })
 
   return z('.z-dashboard', {
-    className: classKebab({ isMenuVisible })
+    className: classKebab({ isMenuVisible, hasPinnedBlock: pinnedBlock })
   }, [
     z($sidebar, {
       orgStream,

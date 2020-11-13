@@ -2,6 +2,7 @@
 import { z, useContext, useMemo, useStream } from 'zorium'
 import * as _ from 'lodash-es'
 import * as Rx from 'rxjs'
+import * as rx from 'rxjs/operators'
 
 import $button from 'frontend-shared/components/button'
 import $icon from 'frontend-shared/components/icon'
@@ -19,24 +20,27 @@ export default function $settings () {
   const { lang, model } = useContext(context)
 
   const {
-    isInviteOrgUserDialogVisibleStream, editingOrgUserStream, orgUsersStream
+    isInviteOrgUserDialogVisibleStream, editingOrgUserStream,
+    orgUsersStream, orgUserInvitesStream
   } = useMemo(() => {
     return {
       isInviteOrgUserDialogVisibleStream: new Rx.BehaviorSubject(false),
       editingOrgUserStream: new Rx.BehaviorSubject(null),
-      orgUsersStream: model.orgUser.getAll()
+      orgUsersStream: model.orgUser.getAll(),
+      orgUserInvitesStream: model.orgUserInvite.getAll()
     }
   }, [])
 
   const {
-    isInviteOrgUserDialogVisible, editingOrgUser, orgUsers
+    isInviteOrgUserDialogVisible, editingOrgUser, orgUsers, orgUserInvites
   } = useStream(() => ({
     isInviteOrgUserDialogVisible: isInviteOrgUserDialogVisibleStream,
     editingOrgUser: editingOrgUserStream,
-    orgUsers: orgUsersStream
+    orgUsers: orgUsersStream,
+    orgUserInvites: orgUserInvitesStream
   }))
 
-  console.log('orgusers', orgUsers, editingOrgUser)
+  console.log('orgusers', orgUsers, orgUserInvites, editingOrgUser)
 
   return z('.z-org-users',
     z('.top', [
@@ -75,6 +79,60 @@ export default function $settings () {
           width: 250,
           content ({ row }) {
             return row.user.email
+          }
+        },
+        {
+          key: 'roles',
+          name: lang.get('general.roles'),
+          width: 300,
+          content ({ row }) {
+            return z($tags, {
+              maxVisibleCount: 3,
+              tags: _.map(row.roles.nodes, ({ name }) => ({ text: name }))
+            })
+          }
+        },
+        {
+          key: 'partner',
+          name: lang.get('general.partner'),
+          width: 300,
+          content ({ row }) {
+            return z($tags, {
+              maxVisibleCount: 3,
+              tags: _.map(row.partners?.nodes, ({ name }) => ({ text: name }))
+            })
+          }
+        },
+        {
+          key: 'edit',
+          name: '',
+          width: 50,
+          content ({ row }) {
+            return z($icon, {
+              icon: editIconPath,
+              onclick: () => {
+                console.log('click')
+                editingOrgUserStream.next(row)
+              }
+            })
+          }
+        }
+      ]
+    }),
+    z('.top', [
+      z('.left', [
+        z('.title', lang.get('orgUsers.invitedUsers'))
+      ])
+    ]),
+    z($table, {
+      data: orgUserInvites?.nodes,
+      columns: [
+        {
+          key: 'email',
+          name: lang.get('general.email'),
+          width: 250,
+          content ({ row }) {
+            return row.email
           }
         },
         {

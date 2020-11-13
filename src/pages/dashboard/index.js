@@ -253,6 +253,7 @@ export default function $dashboardPage ({ requestsStream }) {
   return z('.p-dashboard', [
     z($appBar, {
       hasLogo: true,
+      isContained: false,
       $topRightButton: z($appBarUserMenu)
     }),
     z($dashboard, {

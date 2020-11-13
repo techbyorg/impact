@@ -71,13 +71,14 @@ export default function $newBlockDialog ({ orgUser, onClose }) {
       $title: lang.get('editOrgUserDialog.title'),
       $content:
         z('.z-new-block-dialog_content', [
-          z('.input', z($dropdownMultiple, {
-            valuesStreams: roleIdsStreams,
-            optionsStream: roleOptionsStream
-          })),
+
           z('.input', z($dropdownMultiple, {
             valuesStreams: partnerIdsStreams,
             optionsStream: partnerOptionsStream
+          })),
+          z('.input', z($dropdownMultiple, {
+            valuesStreams: roleIdsStreams,
+            optionsStream: roleOptionsStream
           }))
         ]),
       $actions:

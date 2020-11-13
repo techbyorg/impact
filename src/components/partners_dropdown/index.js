@@ -10,7 +10,7 @@ import context from '../../context'
 if (typeof window !== 'undefined') { require('./index.styl') }
 
 export default function $settings ({ partnerStream }) {
-  const { model, router } = useContext(context)
+  const { model, router, lang } = useContext(context)
 
   const {
     partnersStream, partnerStreams
@@ -34,6 +34,7 @@ export default function $settings ({ partnerStream }) {
       onChange: (value) => {
         router.go('orgPartner', { partnerSlug: value })
       },
+      placeholder: lang.get('partnerDropdown.placeholder'),
       valueStreams: partnerStreams,
       options: _.map(partners.nodes, ({ slug }) => ({
         value: slug,
