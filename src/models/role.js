@@ -8,7 +8,7 @@ export default class Role {
       query: `
         query Roles {
           roles {
-            nodes { id, name }
+            nodes { id, name, slug }
           }
         }`,
       // variables: { orgId },

@@ -12,21 +12,26 @@ if (typeof window !== 'undefined' && window !== null) {
   require('./index.styl')
 }
 
-export default function $newDashboardDialog ({ dashboardId, onClose }) {
+export default function $newDashboardDialog ({ dashboardIdStream, onClose }) {
   const { lang, model } = useContext(context)
 
   const { nameStreams } = useMemo(() => {
-    const dashboardStream = dashboardId && model.dashboard.getById(dashboardId)
+    const dashboardStream = dashboardIdStream.pipe(
+      rx.switchMap((dashboardId) =>
+        dashboardId ? model.dashboard.getById(dashboardId) : Rx.of(null)
+      )
+    )
     const nameStreams = new Rx.ReplaySubject(1)
-    dashboardId
-      ? nameStreams.next(dashboardStream.pipe(rx.map((dashboard) => dashboard.name)))
-      : nameStreams.next(Rx.of(''))
+    nameStreams.next(
+      dashboardStream.pipe(rx.map((dashboard) => dashboard?.name || ''))
+    )
     return {
       nameStreams
     }
   }, [])
 
-  const { name } = useStream(() => ({
+  const { dashboardId, name } = useStream(() => ({
+    dashboardId: dashboardIdStream,
     name: nameStreams.pipe(rx.switchAll())
   }))
 

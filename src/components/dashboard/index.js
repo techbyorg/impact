@@ -3,6 +3,7 @@ import * as _ from 'lodash-es'
 import * as Rx from 'rxjs'
 import * as rx from 'rxjs/operators'
 
+import $conditionalVisible from 'frontend-shared/components/conditional_visible'
 import $dropdown from 'frontend-shared/components/dropdown'
 import $fab from 'frontend-shared/components/fab'
 import $icon from 'frontend-shared/components/icon'
@@ -13,7 +14,7 @@ import { addIconPath, editIconPath } from 'frontend-shared/components/icon/paths
 import { graphColors } from 'frontend-shared/colors'
 
 import $block from '../block'
-import $partnersDropdown from '../partners_dropdown'
+// import $partnersDropdown from '../partners_dropdown'
 import $newBlockDialog from '../new_block_dialog'
 import $newDashboardDialog from '../new_dashboard_dialog'
 import $sidebar from '../sidebar'
@@ -96,8 +97,7 @@ export default function $home (props) {
 
   const {
     startDate, endDate, isMenuVisible, isLoading, dashboard,
-    org, pinnedBlock, timeScale, isNewBlockDialogVisible, editingBlockId,
-    isNewDashboardDialogVisible, editingDashboardId
+    org, pinnedBlock, timeScale
   } = useStream(() => ({
     startDate: startDateStreams.pipe(rx.switchAll()),
     endDate: startDateStreams.pipe(rx.switchAll()),
@@ -111,11 +111,7 @@ export default function $home (props) {
       )
     ),
     presetDateRange: presetDateRangeStream, // only sub'd for side-effect
-    timeScale: timeScaleStream,
-    isNewBlockDialogVisible: isNewBlockDialogVisibleStream,
-    editingBlockId: editingBlockIdStream,
-    isNewDashboardDialogVisible: isNewDashboardDialogVisibleStream,
-    editingDashboardId: editingDashboardIdStream
+    timeScale: timeScaleStream
   }))
 
   if (globalThis.window) {
@@ -134,6 +130,8 @@ export default function $home (props) {
     permissions: ['edit']
   })
 
+  console.log('render dash')
+
   return z('.z-dashboard', {
     className: classKebab({ isMenuVisible, hasPinnedBlock: pinnedBlock })
   }, [
@@ -145,10 +143,10 @@ export default function $home (props) {
       hasEditDashboardPermission
     }),
     z('.content', [
-      z('.top', {
-        onclick: () => { isMenuVisibleStream.next(!isMenuVisible) }
-      }, [
-        z('.info', [
+      z('.top', [
+        z('.info', {
+          onclick: () => { isMenuVisibleStream.next(!isMenuVisible) }
+        }, [
           z('.sup', lang.get('general.dashboard') + ':'),
           z('.name', [
             dashboard?.name,
@@ -156,7 +154,7 @@ export default function $home (props) {
           ])
         ]),
         z('.right', [
-          z('.partners-dropdown', z($partnersDropdown, { partnerStream })),
+          // z('.partners-dropdown', z($partnersDropdown, { partnerStream })),
           hasEditDashboardPermission && z($icon, {
             icon: editIconPath,
             isCircled: true,
@@ -210,6 +208,7 @@ export default function $home (props) {
             hasEditPermission: hasEditDashboardPermission,
             block: pinnedBlock,
             editingBlockIdStream,
+            isNewBlockDialogVisibleStream,
             colors: [colors.getRawColor(colors.$primaryMain)].concat(gColors)
           })
         ]),
@@ -233,6 +232,7 @@ export default function $home (props) {
                     hasEditPermission: hasEditDashboardPermission,
                     block,
                     editingBlockIdStream,
+                    isNewBlockDialogVisibleStream,
                     colors: [colors.getRawColor(colors.$primaryMain)].concat(gColors)
                   })
                 ])
@@ -249,20 +249,25 @@ export default function $home (props) {
         isNewBlockDialogVisibleStream.next(true)
       }
     })),
-    (editingBlockId || isNewBlockDialogVisible) &&
-      z($newBlockDialog, {
+    z($conditionalVisible, {
+      isVisibleStream: isNewBlockDialogVisibleStream,
+      $component: z($newBlockDialog, {
         dashboardId: dashboard?.id,
-        blockId: editingBlockId,
+        blockIdStream: editingBlockIdStream,
         onClose: () => {
           editingBlockIdStream.next(null)
           isNewBlockDialogVisibleStream.next(false)
         }
-      }),
-    isNewDashboardDialogVisible && z($newDashboardDialog, {
-      dashboardId: editingDashboardId,
-      onClose: () => {
-        isNewDashboardDialogVisibleStream.next(false)
-      }
+      })
+    }),
+    z($conditionalVisible, {
+      isVisibleStream: isNewDashboardDialogVisibleStream,
+      $component: z($newDashboardDialog, {
+        dashboardIdStream: editingDashboardIdStream,
+        onClose: () => {
+          isNewDashboardDialogVisibleStream.next(false)
+        }
+      })
     })
   ])
 }

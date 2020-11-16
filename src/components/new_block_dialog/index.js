@@ -15,37 +15,43 @@ if (typeof window !== 'undefined' && window !== null) {
   require('./index.styl')
 }
 
-export default function $newBlockDialog ({ dashboardId, blockId, onClose }) {
+export default function $newBlockDialog (props) {
+  const { dashboardId, blockIdStream, onClose } = props
   const { lang, model } = useContext(context)
 
   const {
     blockStream, nameStreams, metricStreams, metricsStream, typeStreams,
     isPrivateStreams
   } = useMemo(() => {
-    const blockStream = blockId && model.block.getById(blockId)
+    const blockStream = blockIdStream.pipe(
+      rx.switchMap((blockId) =>
+        blockId ? model.block.getById(blockId) : Rx.of(null)
+      )
+    )
 
     const nameStreams = new Rx.ReplaySubject(1)
-    blockId
-      ? nameStreams.next(blockStream.pipe(rx.map((block) => block.name)))
-      : nameStreams.next(Rx.of(''))
+    nameStreams.next(blockStream.pipe(
+      rx.map((block) => block?.name || '')
+    ))
 
     const typeStreams = new Rx.ReplaySubject(1)
-    blockId
-      ? typeStreams.next(blockStream.pipe(rx.map((block) => block.settings?.type)))
-      : typeStreams.next(Rx.of(''))
+    typeStreams.next(blockStream.pipe(
+      rx.map((block) => block?.settings?.type || '')
+    ))
 
     const metricsStream = model.metric.getAll().pipe(
       rx.map(({ nodes }) => nodes)
     )
+    const blockAndMetricsStream = Rx.combineLatest(blockStream, metricsStream)
     const metricStreams = new Rx.ReplaySubject(1)
-    blockId
-      ? metricStreams.next(blockStream.pipe(rx.map((block) => block.metricIds[0].id)))
-      : metricStreams.next(metricsStream.pipe(rx.map((metrics) => metrics?.[0]?.id)))
+    metricStreams.next(blockAndMetricsStream.pipe(
+      rx.map(([block, metrics]) => block?.metricIds[0].id || metrics?.[0]?.id)
+    ))
 
     const isPrivateStreams = new Rx.ReplaySubject(1)
-    blockId
-      ? isPrivateStreams.next(blockStream.pipe(rx.map((block) => !block.defaultPermissions?.view)))
-      : isPrivateStreams.next(Rx.of(false))
+    isPrivateStreams.next(blockStream.pipe(
+      rx.map((block) => block ? !block.defaultPermissions?.view : false))
+    )
 
     return {
       blockStream,
@@ -57,7 +63,9 @@ export default function $newBlockDialog ({ dashboardId, blockId, onClose }) {
     }
   }, [])
 
-  const { block, name, metric, metrics, type, isPrivate } = useStream(() => ({
+  const {
+    block, name, metric, metrics, type, isPrivate
+  } = useStream(() => ({
     block: blockStream,
     name: nameStreams.pipe(rx.switchAll()),
     metric: metricStreams.pipe(rx.switchAll()),

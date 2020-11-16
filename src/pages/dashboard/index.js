@@ -6,8 +6,8 @@ import DateService from 'frontend-shared/services/date'
 import useMeta from 'frontend-shared/services/use_meta'
 import useCssVariables from 'frontend-shared/services/use_css_variables'
 import $appBar from 'frontend-shared/components/app_bar'
+import $appBarUserMenu from 'frontend-shared/components/app_bar_user_menu'
 
-import $appBarUserMenu from '../../components/app_bar_user_menu'
 import $dashboard from '../../components/dashboard'
 import context from '../../context'
 
@@ -111,6 +111,7 @@ export default function $dashboardPage ({ requestsStream }) {
           const [
             org, dashboardSlug, partner, startDate, endDate, timeScale
           ] = options
+          console.log('get dash', options)
           return model.dashboard.getByOrgIdAndSlug(org.id, dashboardSlug, {
             segmentId: partner?.segmentId,
             startDate,

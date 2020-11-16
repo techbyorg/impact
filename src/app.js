@@ -7,7 +7,7 @@ import $privacyPage from 'frontend-shared/pages/privacy'
 import $dashboardPage from './pages/dashboard'
 import $homePage from './pages/home'
 import $signInPage from 'frontend-shared/pages/sign_in'
-import $settingsPage from './pages/settings'
+import $settingsPage from 'frontend-shared/pages/settings'
 import $shellPage from './pages/shell'
 import $404Page from './pages/404'
 
@@ -22,7 +22,9 @@ export default function $app (props) {
       orgDashboardWithPartner: $dashboardPage,
       orgPartner: $dashboardPage,
       orgSignIn: $signInPage,
+      orgInvite: $signInPage,
       orgSettings: $settingsPage,
+      orgSettingsWithTab: $settingsPage,
 
       // duplicate for org routes too for custom domains to work
       // TODO: come up with better solution. currently we detect custom

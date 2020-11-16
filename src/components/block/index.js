@@ -14,7 +14,8 @@ if (typeof window !== 'undefined') { require('./index.styl') }
 
 export default function $block (props) {
   const {
-    timeScale, block, colors, hasEditPermission, editingBlockIdStream
+    timeScale, block, colors, hasEditPermission, editingBlockIdStream,
+    isNewBlockDialogVisibleStream
   } = props
   const allColors = useContext(context).colors
 
@@ -39,6 +40,7 @@ export default function $block (props) {
         size: '14px',
         onclick: () => {
           editingBlockIdStream.next(block.id)
+          isNewBlockDialogVisibleStream.next(true)
         }
       }))
     ]),
