@@ -20,8 +20,8 @@ export default class Role {
     return this.auth.call({
       query: `
         mutation RoleUpsert(
-          $id: ID!
-          $slug: String!
+          $id: ID
+          $slug: String
           $name: String
           $permissions: JSON
         ) {

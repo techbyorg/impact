@@ -9,12 +9,12 @@ import $fab from 'frontend-shared/components/fab'
 import $icon from 'frontend-shared/components/icon'
 import $inputDateRange from 'frontend-shared/components/input_date_range'
 import $masonryGrid from 'frontend-shared/components/masonry_grid'
+import $partnersDropdown from 'frontend-shared/components/partners_dropdown'
 import $spinner from 'frontend-shared/components/spinner'
 import { addIconPath, editIconPath } from 'frontend-shared/components/icon/paths'
 import { graphColors } from 'frontend-shared/colors'
 
 import $block from '../block'
-// import $partnersDropdown from '../partners_dropdown'
 import $newBlockDialog from '../new_block_dialog'
 import $newDashboardDialog from '../new_dashboard_dialog'
 import $sidebar from '../sidebar'
@@ -154,7 +154,7 @@ export default function $home (props) {
           ])
         ]),
         z('.right', [
-          // z('.partners-dropdown', z($partnersDropdown, { partnerStream })),
+          z('.partners-dropdown', z($partnersDropdown, { partnerStream })),
           hasEditDashboardPermission && z($icon, {
             icon: editIconPath,
             isCircled: true,
