@@ -8,7 +8,7 @@ export default class Partner {
       query: `
         query PartnerByOrgIdAndSlug($orgId: ID!, $slug: String) {
           partner(orgId: $orgId, slug: $slug) {
-            id, slug, name # , segmentId
+            id, slug, name, data
           }
         }`,
       variables: { orgId, slug },
@@ -21,7 +21,7 @@ export default class Partner {
       query: `
         query Partners {
           partners {
-            nodes { id, slug, name }
+            nodes { id, slug, name, data }
           }
         }`,
       // variables:  { orgId },
@@ -29,20 +29,21 @@ export default class Partner {
     })
   }
 
-  upsert = ({ id, slug, name }) => {
+  upsert = ({ id, slug, name, data }) => {
     return this.auth.call({
       query: `
         mutation RoleUpsert(
           $id: ID
           $slug: String
           $name: String
+          $data: JSON
         ) {
-          partnerUpsert(id: $id, slug: $slug, name: $name) {
+          partnerUpsert(id: $id, slug: $slug, name: $name, data: $data) {
             name
           }
         }
 `,
-      variables: { id, slug, name },
+      variables: { id, slug, name, data },
       pull: 'partner'
     }, { invalidateAll: true })
   }

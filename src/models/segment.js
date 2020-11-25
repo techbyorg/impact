@@ -21,7 +21,7 @@ export default class Segment {
       query: `
         query Segments {
           segments {
-            nodes { slug, name }
+            nodes { id, slug, name }
           }
         }`,
       // variables: {},
