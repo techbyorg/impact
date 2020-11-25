@@ -9,7 +9,7 @@ import $fab from 'frontend-shared/components/fab'
 import $icon from 'frontend-shared/components/icon'
 import $inputDateRange from 'frontend-shared/components/input_date_range'
 import $masonryGrid from 'frontend-shared/components/masonry_grid'
-import $partnersDropdown from 'frontend-shared/components/partners_dropdown'
+import $segmentsDropdown from 'frontend-shared/components/segments_dropdown'
 import $spinner from 'frontend-shared/components/spinner'
 import { addIconPath, editIconPath } from 'frontend-shared/components/icon/paths'
 import { graphColors } from 'frontend-shared/colors'
@@ -25,7 +25,7 @@ if (typeof window !== 'undefined') { require('./index.styl') }
 
 export default function $home (props) {
   const {
-    orgStream, dashboardSlugStream, dashboardStream, partnerStream,
+    orgStream, dashboardSlugStream, dashboardStream, segmentStream,
     isLoadingStream, startDateStreams, endDateStreams, timeScaleStream
   } = props
   const { model, lang, colors, router, cookie } = useContext(context)
@@ -35,8 +35,8 @@ export default function $home (props) {
     isNewBlockDialogVisibleStream, editingBlockIdStream,
     isNewDashboardDialogVisibleStream, editingDashboardIdStream
   } = useMemo(() => {
-    const partnerStreams = new Rx.ReplaySubject(1)
-    partnerStreams.next(partnerStream)
+    const segmentStreams = new Rx.ReplaySubject(1)
+    segmentStreams.next(segmentStream)
 
     let isFirstPresetDateRange = true
     const initialPresetDateRange = cookie.get('presetDateRange') || 'last6Months'
@@ -154,7 +154,9 @@ export default function $home (props) {
           ])
         ]),
         z('.right', [
-          z('.partners-dropdown', z($partnersDropdown, { partnerStream })),
+          z('.segments-dropdown', z($segmentsDropdown, {
+            segmentStream, dashboardSlug: dashboard?.slug
+          })),
           hasEditDashboardPermission && z($icon, {
             icon: editIconPath,
             isCircled: true,

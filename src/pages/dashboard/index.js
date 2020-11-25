@@ -19,7 +19,7 @@ export default function $dashboardPage ({ requestsStream }) {
   const { model, router, colors, cookie } = useContext(context)
 
   const {
-    orgStream, orgSlugStream, dashboardSlugStream, partnerStream,
+    orgStream, orgSlugStream, dashboardSlugStream, segmentStream,
     dashboardStream, isLoadingStream, startDateStreams, endDateStreams,
     timeScaleStream
   } = useMemo(() => {
@@ -38,21 +38,18 @@ export default function $dashboardPage ({ requestsStream }) {
         }
       })
     )
-    const partnerSlugStream = requestsStream.pipe(
-      rx.map(({ route }) => route.params.partnerSlug)
+    const segmentSlugStream = requestsStream.pipe(
+      rx.map(({ route }) => route.params.segmentSlug)
     )
     const orgStream = orgSlugStream.pipe(
       rx.switchMap((orgSlug) => {
         return model.org.getBySlug(orgSlug)
       })
     )
-    const orgAndPartnerSlugStream = Rx.combineLatest(
-      orgStream, partnerSlugStream
-    )
-    const partnerStream = orgAndPartnerSlugStream.pipe(
-      rx.switchMap(([org, partnerSlug]) => {
-        if (partnerSlug) {
-          return model.partner.getByOrgIdAndSlug(org.id, partnerSlug)
+    const segmentStream = segmentSlugStream.pipe(
+      rx.switchMap((slug) => {
+        if (slug) {
+          return model.segment.getBySlug(slug)
         } else {
           return Rx.of(null)
         }
@@ -86,7 +83,7 @@ export default function $dashboardPage ({ requestsStream }) {
     const orgAndExtrasStream = Rx.combineLatest(
       orgStream,
       dashboardSlugStream,
-      partnerStream,
+      segmentStream,
       startDateStreams.pipe(rx.switchAll()),
       endDateStreams.pipe(rx.switchAll()),
       timeScaleStream
@@ -98,22 +95,22 @@ export default function $dashboardPage ({ requestsStream }) {
       orgStream,
       orgSlugStream,
       dashboardSlugStream,
-      partnerStream,
+      segmentStream,
       startDateStreams,
       endDateStreams,
       timeScaleStream,
       dashboardStream: orgAndExtrasStream.pipe(
-        rx.filter(([org, dashboardSlug, partner, startDate, endDate]) =>
+        rx.filter(([org, dashboardSlug, segment, startDate, endDate]) =>
           startDate && endDate
         ),
         rx.tap(() => { isLoadingStream.next(true) }),
         rx.switchMap((options) => {
           const [
-            org, dashboardSlug, partner, startDate, endDate, timeScale
+            org, dashboardSlug, segment, startDate, endDate, timeScale
           ] = options
-          console.log('get dash', options)
+          console.log('get dash', options, segment)
           return model.dashboard.getByOrgIdAndSlug(org.id, dashboardSlug, {
-            segmentId: partner?.segmentId,
+            segmentId: segment?.id,
             startDate,
             endDate,
             timeScale
@@ -260,7 +257,7 @@ export default function $dashboardPage ({ requestsStream }) {
     z($dashboard, {
       orgStream,
       dashboardSlugStream,
-      partnerStream,
+      segmentStream,
       dashboardStream,
       isLoadingStream,
       startDateStreams,

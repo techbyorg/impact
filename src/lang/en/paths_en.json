@@ -2,7 +2,7 @@
   "home": "/",
   "orgHome": "/org/:orgSlug",
   "orgDashboard": "/org/:orgSlug/dashboard/:dashboardSlug",
-  "orgDashboardWithPartner": "/org/:orgSlug/partner/:partnerSlug/dashboard/:dashboardSlug",
+  "orgDashboardWithSegment": "/org/:orgSlug/dashboard/:dashboardSlug/segment/:segmentSlug",
   "orgPartner": "/org/:orgSlug/partner/:partnerSlug",
   "orgSignIn": "/org/:orgSlug/sign-in",
   "orgInvite": "/org/:orgSlug/invite/:inviteTokenStr",

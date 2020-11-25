@@ -19,7 +19,7 @@ export default function $app (props) {
       home: $homePage,
       orgHome: $dashboardPage,
       orgDashboard: $dashboardPage,
-      orgDashboardWithPartner: $dashboardPage,
+      orgDashboardWithSegment: $dashboardPage,
       orgPartner: $dashboardPage,
       orgSignIn: $signInPage,
       orgInvite: $signInPage,

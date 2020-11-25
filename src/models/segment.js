@@ -3,28 +3,28 @@ export default class Segment {
     this.auth = auth
   }
 
-  getByOrgIdAndSlug = (orgId, slug) => {
+  getBySlug = (slug) => {
     return this.auth.stream({
       query: `
-        query SegmentByOrgIdAndSlug($orgId: ID!, $slug: String) {
-          segment(orgId: $orgId, slug: $slug) {
+        query SegmentBySlug($slug: String!) {
+          segment(slug: $slug) {
             id, slug, name
           }
         }`,
-      variables: { orgId, slug },
+      variables: { slug },
       pull: 'segment'
     })
   }
 
-  getAllByOrgId = (orgId) => {
+  getAll = () => {
     return this.auth.stream({
       query: `
-        query Segments($orgId: ID!) {
-          segments(orgId: $orgId) {
+        query Segments {
+          segments {
             nodes { slug, name }
           }
         }`,
-      variables: { orgId },
+      // variables: {},
       pull: 'segments'
     })
   }
