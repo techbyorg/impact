@@ -50,7 +50,7 @@ export default function $newBlockDialog (props) {
 
     const isPrivateStreams = new Rx.ReplaySubject(1)
     isPrivateStreams.next(blockStream.pipe(
-      rx.map((block) => block ? !block.defaultPermissions?.view : false))
+      rx.map((block) => block?.defaultPermissions ? !block.defaultPermissions.view : false))
     )
 
     return {
