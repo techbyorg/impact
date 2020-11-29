@@ -7,7 +7,6 @@ import $button from 'frontend-shared/components/button'
 import $dialog from 'frontend-shared/components/dialog'
 import $dropdown from 'frontend-shared/components/dropdown'
 import $input from 'frontend-shared/components/input'
-import $toggle from 'frontend-shared/components/toggle'
 
 import context from '../../context'
 
@@ -20,8 +19,7 @@ export default function $newBlockDialog (props) {
   const { lang, model } = useContext(context)
 
   const {
-    blockStream, nameStreams, metricStreams, metricsStream, typeStreams,
-    isPrivateStreams
+    blockStream, nameStreams, metricStreams, metricsStream, typeStreams
   } = useMemo(() => {
     const blockStream = blockIdStream.pipe(
       rx.switchMap((blockId) =>
@@ -48,30 +46,23 @@ export default function $newBlockDialog (props) {
       rx.map(([block, metrics]) => block?.metricIds[0].id || metrics?.[0]?.id)
     ))
 
-    const isPrivateStreams = new Rx.ReplaySubject(1)
-    isPrivateStreams.next(blockStream.pipe(
-      rx.map((block) => block?.defaultPermissions ? !block.defaultPermissions.view : false))
-    )
-
     return {
       blockStream,
       nameStreams,
       metricStreams,
       metricsStream,
-      typeStreams,
-      isPrivateStreams
+      typeStreams
     }
   }, [])
 
   const {
-    block, name, metric, metrics, type, isPrivate
+    block, name, metric, metrics, type
   } = useStream(() => ({
     block: blockStream,
     name: nameStreams.pipe(rx.switchAll()),
     metric: metricStreams.pipe(rx.switchAll()),
     metrics: metricsStream,
-    type: typeStreams.pipe(rx.switchAll()),
-    isPrivate: isPrivateStreams.pipe(rx.switchAll())
+    type: typeStreams.pipe(rx.switchAll())
   }))
 
   console.log('metrics', metrics, metric, block, type)
@@ -82,8 +73,7 @@ export default function $newBlockDialog (props) {
       dashboardId: dashboardId,
       name: name,
       metricIds: [{ id: metric }],
-      settings: { type },
-      defaultPermissions: _.defaults({ view: !isPrivate }, block.defaultPermissions)
+      settings: { type }
     })
     onClose()
   }
@@ -116,14 +106,7 @@ export default function $newBlockDialog (props) {
             options: _.map(metrics, ({ id, name }) => ({
               value: id, text: name
             }))
-          })),
-          z('.input', [
-            z('label.label', [
-              z('.title', lang.get('newBlockDialog.private')),
-              z('.description', lang.get('newBlockDialog.privateDescription'))
-            ]),
-            z($toggle, { isSelectedStreams: isPrivateStreams })
-          ])
+          }))
         ]),
       $actions:
         z('.z-new-block-dialog_actions', [

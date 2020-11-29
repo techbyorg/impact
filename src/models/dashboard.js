@@ -80,7 +80,7 @@ export default class Dashboard {
           $id: ID!
         ) {
           dashboard(id: $id) {
-            id, name, defaultPermissions
+            id, name
           }
         }`,
       variables: { id },
@@ -88,20 +88,19 @@ export default class Dashboard {
     })
   }
 
-  upsert = ({ id, name, defaultPermissions }) => {
+  upsert = ({ id, name }) => {
     return this.auth.call({
       query: `
         mutation DashboardUpsert(
           $id: ID
           $name: String!
-          $defaultPermissions: JSON
         ) {
-          dashboardUpsert(id: $id, name: $name, defaultPermissions: $defaultPermissions) {
+          dashboardUpsert(id: $id, name: $name) {
             name
           }
         }
 `,
-      variables: { id, name, defaultPermissions },
+      variables: { id, name },
       pull: 'dashboard'
     }, { invalidateAll: true })
   }

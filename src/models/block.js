@@ -27,7 +27,7 @@ export default class Block {
           $id: ID!
         ) {
           block(id: $id) {
-            id, name, metricIds, settings, defaultPermissions
+            id, name, metricIds, settings
           }
         }`,
       variables: { id },
@@ -35,7 +35,7 @@ export default class Block {
     })
   }
 
-  upsert = ({ id, name, dashboardId, metricIds, settings, defaultPermissions }) => {
+  upsert = ({ id, name, dashboardId, metricIds, settings }) => {
     return this.auth.call({
       query: `
         mutation BlockUpsert(
@@ -44,14 +44,13 @@ export default class Block {
           $dashboardId: ID!
           $metricIds: JSON!
           $settings: JSON
-          $defaultPermissions: JSON
         ) {
-          blockUpsert(id: $id, name: $name, dashboardId: $dashboardId, metricIds: $metricIds, settings: $settings, defaultPermissions: $defaultPermissions) {
+          blockUpsert(id: $id, name: $name, dashboardId: $dashboardId, metricIds: $metricIds, settings: $settings) {
             name
           }
         }
 `,
-      variables: { id, name, dashboardId, metricIds, settings, defaultPermissions },
+      variables: { id, name, dashboardId, metricIds, settings },
       pull: 'block'
     }, { invalidateAll: true })
   }
