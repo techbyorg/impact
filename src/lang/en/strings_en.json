@@ -20,8 +20,6 @@
   "inviteOrgUserDialog.inviteLinkTitle": "OR enter the name of the person you want to invite and generate a link",
   "inviteOrgUserDialog.generateLink": "Generate link",
   "newBlockDialog.title": "Add a block",
-  "newBlockDialog.private": "Keep this block private",
-  "newBlockDialog.privateDescription": "Only users with permission will be able to see it",
   "newDashboardDialog.title": "Add a dashboard",
   "orgUsers.description": "Find all of the accounts you’ve invited and their associated roles",
   "orgUsers.invitedUsers": "Invited users",

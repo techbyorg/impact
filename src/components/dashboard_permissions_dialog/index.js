@@ -25,7 +25,7 @@ export default function $newDashboardDialog ({ dashboardIdStream, onClose }) {
       rx.switchMap((id) => {
         // FIXME: create permission model or go through all roles and see which have perm for this dash
         return id
-          ? model.permission.getBySourceTypeAndSourceId('dashboard', id)
+          ? model.permission.getBySourceTypeAndSourceId('impact-dashboard', id)
           : Rx.of(null)
       })
     )
@@ -108,7 +108,7 @@ export default function $newDashboardDialog ({ dashboardIdStream, onClose }) {
   const addRole = () => {
     model.permission.upsert({
       roleId: selectedAddRoleId,
-      sourceType: 'dashboard',
+      sourceType: 'impact-dashboard',
       sourceId: dashboardId,
       permission: 'view',
       value: true
@@ -121,7 +121,7 @@ export default function $newDashboardDialog ({ dashboardIdStream, onClose }) {
     console.log('perms', dashboardPermissions)
     model.permission.batchUpsert(
       _.map(dashboardPermissions, ({ permission, valueStream }) => ({
-        sourceType: 'dashboard',
+        sourceType: 'impact-dashboard',
         sourceId: dashboardId,
         roleId: selectedRoleId,
         permission,

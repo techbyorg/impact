@@ -60,16 +60,10 @@ export default function $newDashboardDialog ({ dashboardIdStream, onClose }) {
             valueStreams: nameStreams,
             placeholder: lang.get('general.name'),
             type: 'text'
-          })),
-          z('.input', [
-            z('label.label', [
-              z('.title', lang.get('newBlockDialog.private')),
-              z('.description', lang.get('newBlockDialog.privateDescription'))
-            ])
-          ])//,
+          }))//,
           // z('.input', z($rolePicker, {
           //   roleIdsStreams,
-          //   sourceType: 'dashboard',
+          //   sourceType: 'impact-dashboard',
           //   sourceIdStream: dashboardIdStream
           // }))
         ]),
