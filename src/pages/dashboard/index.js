@@ -126,6 +126,8 @@ export default function $dashboardPage ({ requestsStream }) {
     orgSlug: orgSlugStream
   }))
 
+  console.log('org', org)
+
   useMeta((org) => {
     // TODO: non-hardcoded
     // FIXME: org?.slug doesn't seem to be defined
