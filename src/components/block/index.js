@@ -13,11 +13,10 @@ import context from '../../context'
 if (typeof window !== 'undefined') { require('./index.styl') }
 
 export default function $block (props) {
-  const {
-    timeScale, block, colors, hasEditPermission, editingBlockIdStream,
-    isNewBlockDialogVisibleStream
-  } = props
-  const allColors = useContext(context).colors
+  const { timeScale, block, colors, hasEditPermission } = props
+  const ctx = useContext(context)
+  const { router } = ctx
+  const allColors = ctx
 
   const $chart = block.settings.type === 'us-map'
     ? $blockChartMap
@@ -39,8 +38,7 @@ export default function $block (props) {
         color: allColors.$bgText70,
         size: '14px',
         onclick: () => {
-          editingBlockIdStream.next(block.id)
-          isNewBlockDialogVisibleStream.next(true)
+          router.go('orgEditBlock', { id: block.id })
         }
       }))
     ]),

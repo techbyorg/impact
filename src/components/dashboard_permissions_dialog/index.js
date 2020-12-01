@@ -64,7 +64,6 @@ export default function $newDashboardDialog ({ dashboardIdStream, onClose }) {
         const editPermission = _.find(allDashboardPermissions?.nodes, {
           roleId: selectedRoleId, permission: 'edit'
         })
-        console.log('allll', selectedRoleId, allDashboardPermissions, viewPermission, editPermission)
         return [
           {
             name: lang.get('permissionType.view'),
@@ -103,8 +102,6 @@ export default function $newDashboardDialog ({ dashboardIdStream, onClose }) {
     selectedRoleId: selectedRoleIdStreams.pipe(rx.switchAll())
   }))
 
-  console.log('roles', unselectedRoles, dashboardRoles, dashboardPermissions)
-
   const addRole = () => {
     model.permission.upsert({
       roleId: selectedAddRoleId,
@@ -117,8 +114,6 @@ export default function $newDashboardDialog ({ dashboardIdStream, onClose }) {
 
   const updatePermissions = async () => {
     // await model.role.upsert
-    console.log(dashboardId)
-    console.log('perms', dashboardPermissions)
     model.permission.batchUpsert(
       _.map(dashboardPermissions, ({ permission, valueStream }) => ({
         sourceType: 'impact-dashboard',

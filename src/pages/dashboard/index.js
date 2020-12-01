@@ -80,8 +80,7 @@ export default function $dashboardPage ({ requestsStream }) {
       )
     )
 
-    const orgAndExtrasStream = Rx.combineLatest(
-      orgStream,
+    const extrasStream = Rx.combineLatest(
       dashboardSlugStream,
       segmentStream,
       startDateStreams.pipe(rx.switchAll()),
@@ -99,17 +98,16 @@ export default function $dashboardPage ({ requestsStream }) {
       startDateStreams,
       endDateStreams,
       timeScaleStream,
-      dashboardStream: orgAndExtrasStream.pipe(
-        rx.filter(([org, dashboardSlug, segment, startDate, endDate]) =>
+      dashboardStream: extrasStream.pipe(
+        rx.filter(([dashboardSlug, segment, startDate, endDate]) =>
           startDate && endDate
         ),
         rx.tap(() => { isLoadingStream.next(true) }),
         rx.switchMap((options) => {
           const [
-            org, dashboardSlug, segment, startDate, endDate, timeScale
+            dashboardSlug, segment, startDate, endDate, timeScale
           ] = options
-          console.log('get dash', options, segment)
-          return model.dashboard.getByOrgIdAndSlug(org.id, dashboardSlug, {
+          return model.dashboard.getBySlugWithBlocks(dashboardSlug, {
             segmentId: segment?.id,
             startDate,
             endDate,
@@ -125,8 +123,6 @@ export default function $dashboardPage ({ requestsStream }) {
     org: orgStream,
     orgSlug: orgSlugStream
   }))
-
-  console.log('org', org)
 
   useMeta((org) => {
     // TODO: non-hardcoded

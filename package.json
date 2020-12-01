@@ -28,6 +28,7 @@
     "@babel/plugin-transform-runtime": "^7.10.1",
     "@babel/preset-env": "^7.10.1",
     "@babel/register": "^7.10.1",
+    "all-shared": "file:all-shared",
     "assert-none-missing": "github:claydotio/assert-none-missing#es",
     "babel-plugin-replace-imports": "^1.0.2",
     "frontend-shared": "file:frontend-shared",

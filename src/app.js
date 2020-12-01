@@ -5,6 +5,8 @@ import $sharedApp from 'frontend-shared/app'
 import $privacyPage from 'frontend-shared/pages/privacy'
 
 import $dashboardPage from './pages/dashboard'
+import $editBlockPage from './pages/edit_block'
+import $editDashboardPage from './pages/edit_dashboard'
 import $homePage from './pages/home'
 import $signInPage from 'frontend-shared/pages/sign_in'
 import $settingsPage from 'frontend-shared/pages/settings'
@@ -20,6 +22,10 @@ export default function $app (props) {
       orgHome: $dashboardPage,
       orgDashboard: $dashboardPage,
       orgDashboardWithSegment: $dashboardPage,
+      orgEditBlock: $editBlockPage,
+      orgEditBlockWithTab: $editBlockPage,
+      orgEditDashboard: $editDashboardPage,
+      orgEditDashboardWithTab: $editDashboardPage,
       orgPartner: $dashboardPage,
       orgSignIn: $signInPage,
       orgInvite: $signInPage,

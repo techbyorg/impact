@@ -3,14 +3,13 @@ export default class Dashboard {
     this.auth = auth
   }
 
-  getByOrgIdAndSlug = (orgId, slug, options) => {
+  getBySlugWithBlocks = (slug, options) => {
     const {
       segmentId, startDate, endDate, timeScale
     } = options
     return this.auth.stream({
       query: `
-        query DashboardByOrgIdAndSlug(
-          $orgId: String
+        query DashboardBySlugWithBlocks(
           $slug: String
           # $dashboardId: ID!
           $segmentId: ID
@@ -18,7 +17,7 @@ export default class Dashboard {
           $endDate: String
           $timeScale: String
         ) {
-          dashboard(orgId: $orgId, slug: $slug) {
+          dashboard(slug: $slug) {
             id, slug, name
             blocks {
               nodes {
@@ -53,7 +52,7 @@ export default class Dashboard {
           }
         }`,
       variables: {
-        orgId, slug, segmentId, startDate, endDate, timeScale
+        slug, segmentId, startDate, endDate, timeScale
       },
       pull: 'dashboard'
     })
@@ -80,10 +79,25 @@ export default class Dashboard {
           $id: ID!
         ) {
           dashboard(id: $id) {
-            id, name
+            id, name, slug
           }
         }`,
       variables: { id },
+      pull: 'dashboard'
+    })
+  }
+
+  getBySlug = (slug) => {
+    return this.auth.stream({
+      query: `
+        query DashboardBySlug(
+          $slug: String!
+        ) {
+          dashboard(slug: $slug) {
+            id, name, slug
+          }
+        }`,
+      variables: { slug },
       pull: 'dashboard'
     })
   }

@@ -11,13 +11,12 @@ import $inputDateRange from 'frontend-shared/components/input_date_range'
 import $masonryGrid from 'frontend-shared/components/masonry_grid'
 import $segmentsDropdown from 'frontend-shared/components/segments_dropdown'
 import $spinner from 'frontend-shared/components/spinner'
-import { addIconPath, editIconPath, eyeIconPath } from 'frontend-shared/components/icon/paths'
+import { addIconPath, editIconPath } from 'frontend-shared/components/icon/paths'
 import { graphColors } from 'frontend-shared/colors'
 
 import $block from '../block'
 import $newBlockDialog from '../new_block_dialog'
 import $newDashboardDialog from '../new_dashboard_dialog'
-import $dashboardPermissionsDialog from '../dashboard_permissions_dialog'
 import $sidebar from '../sidebar'
 import { bankIconPath } from '../icon/paths'
 import context from '../../context'
@@ -34,8 +33,7 @@ export default function $home (props) {
   const {
     presetDateRangeStream, gColors, isMenuVisibleStream,
     isNewBlockDialogVisibleStream, editingBlockIdStream,
-    isNewDashboardDialogVisibleStream, editingDashboardIdStream,
-    permissionsDashboardIdStream
+    isNewDashboardDialogVisibleStream
   } = useMemo(() => {
     const segmentStreams = new Rx.ReplaySubject(1)
     segmentStreams.next(segmentStream)
@@ -92,9 +90,7 @@ export default function $home (props) {
       isMenuVisibleStream: new Rx.BehaviorSubject(false),
       isNewBlockDialogVisibleStream: new Rx.BehaviorSubject(false),
       editingBlockIdStream: new Rx.BehaviorSubject(null),
-      isNewDashboardDialogVisibleStream: new Rx.BehaviorSubject(false),
-      editingDashboardIdStream: new Rx.BehaviorSubject(null),
-      permissionsDashboardIdStream: new Rx.BehaviorSubject(null)
+      isNewDashboardDialogVisibleStream: new Rx.BehaviorSubject(false)
     }
   }, [])
 
@@ -165,16 +161,9 @@ export default function $home (props) {
             isCircled: true,
             color: colors.$bgText60,
             onclick: () => {
-              editingDashboardIdStream.next(dashboard.id)
-              isNewDashboardDialogVisibleStream.next(true)
-            }
-          }),
-          hasEditDashboardPermission && z($icon, {
-            icon: eyeIconPath,
-            isCircled: true,
-            color: colors.$bgText60,
-            onclick: () => {
-              permissionsDashboardIdStream.next(dashboard.id)
+              router.go('orgEditDashboard', {
+                dashboardSlug: dashboard?.slug
+              })
             }
           })
         ])
@@ -276,18 +265,8 @@ export default function $home (props) {
     z($conditionalVisible, {
       isVisibleStream: isNewDashboardDialogVisibleStream,
       $component: z($newDashboardDialog, {
-        dashboardIdStream: editingDashboardIdStream,
         onClose: () => {
           isNewDashboardDialogVisibleStream.next(false)
-        }
-      })
-    }),
-    z($conditionalVisible, {
-      isVisibleStream: permissionsDashboardIdStream,
-      $component: z($dashboardPermissionsDialog, {
-        dashboardIdStream: permissionsDashboardIdStream,
-        onClose: () => {
-          permissionsDashboardIdStream.next(null)
         }
       })
     })

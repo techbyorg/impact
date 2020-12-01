@@ -65,8 +65,6 @@ export default function $newBlockDialog (props) {
     type: typeStreams.pipe(rx.switchAll())
   }))
 
-  console.log('metrics', metrics, metric, block, type)
-
   const createBlock = async () => {
     await model.block.upsert({
       id: block?.id,
