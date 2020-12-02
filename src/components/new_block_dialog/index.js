@@ -13,17 +13,11 @@ if (typeof window !== 'undefined' && window !== null) {
 }
 
 export default function $newBlockDialog (props) {
-  const { dashboardId, blockIdStream, onClose } = props
-  const { lang, model } = useContext(context)
+  const { dashboardId, onClose } = props
+  const { lang } = useContext(context)
 
   const { blockStream } = useMemo(() => {
-    const blockStream = blockIdStream.pipe(
-      rx.switchMap((blockId) =>
-        blockId ? model.block.getById(blockId) : Rx.of(null)
-      )
-    )
-
-    return { blockStream }
+    return { blockStream: Rx.of(null) }
   }, [])
 
   return z('.z-new-block-dialog', [

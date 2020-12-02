@@ -11,7 +11,7 @@ if (typeof window !== 'undefined' && window !== null) {
   require('./index.styl')
 }
 
-export default function $editDashboardOverview ({ dashboardStream }) {
+export default function $editDashboardOverview ({ dashboardStream, onSave }) {
   const { lang, model } = useContext(context)
 
   const { nameStreams } = useMemo(() => {
@@ -35,6 +35,7 @@ export default function $editDashboardOverview ({ dashboardStream }) {
       id: dashboard?.id,
       name: name
     })
+    onSave?.()
   }
 
   return z('.z-edit-dashboard-overview', [
