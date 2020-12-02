@@ -41,7 +41,7 @@ export default class Block {
         mutation BlockUpsert(
           $id: ID
           $name: String!
-          $dashboardId: ID!
+          $dashboardId: ID
           $metricIds: JSON!
           $settings: JSON
         ) {

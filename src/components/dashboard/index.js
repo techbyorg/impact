@@ -113,6 +113,8 @@ export default function $home (props) {
     timeScale: timeScaleStream
   }))
 
+  console.log('org', org)
+
   if (globalThis.window) {
     useEffect(() => {
       startDate && cookie.set('startDate', startDate)

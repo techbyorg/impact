@@ -5,7 +5,7 @@ import context from '../../context'
 export default function $home (props) {
   const { colors } = useContext(context)
 
-  return z('svg', { xmlns: 'http://www.w3.org/2000/svg', 'xmlns:xlink': 'http://www.w3.org/1999/xlink', width: '109', height: '132' },
+  return z('svg', { width: '109', height: '132' },
     [
       z('defs',
         z('path', { id: 'a', d: 'M11.227 16.938a1.92 1.92 0 01-2.587-.01l-.106-.096C3.484 12.262.185 9.272.31 5.539c.058-1.635.895-3.203 2.25-4.126C5.1-.32 8.237.489 9.93 2.47c1.693-1.982 4.829-2.8 7.368-1.058 1.356.923 2.193 2.491 2.25 4.126.135 3.732-3.174 6.724-8.223 11.312l-.097.087z' })

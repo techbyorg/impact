@@ -1,7 +1,7 @@
 import { z, useContext, useMemo, useStream } from 'zorium'
 import * as Rx from 'rxjs'
 import * as rx from 'rxjs/operators'
-import * as _ from 'lodash'
+import * as _ from 'lodash-es'
 
 import $button from 'frontend-shared/components/button'
 import $dialog from 'frontend-shared/components/dialog'

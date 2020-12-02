@@ -1,6 +1,7 @@
 import { z, useContext, useMemo, useStream } from 'zorium'
 import * as Rx from 'rxjs'
 import * as rx from 'rxjs/operators'
+import * as _ from 'lodash-es'
 
 import DateService from 'frontend-shared/services/date'
 import useMeta from 'frontend-shared/services/use_meta'
@@ -38,20 +39,27 @@ export default function $dashboardPage ({ requestsStream }) {
         }
       })
     )
+    // FIXME: some partners shouldn't get 'all'
     const segmentSlugStream = requestsStream.pipe(
       rx.map(({ route }) => route.params.segmentSlug)
     )
-    const orgStream = orgSlugStream.pipe(
-      rx.switchMap((orgSlug) => {
-        return model.org.getBySlug(orgSlug)
-      })
-    )
-    const segmentStream = segmentSlugStream.pipe(
-      rx.switchMap((slug) => {
+    const orgStream = model.org.getMe()
+    const segmentsStream = model.segment.getAll()
+    const segmentStream = Rx.combineLatest(
+      segmentSlugStream,
+      segmentsStream
+    ).pipe(
+      rx.map(([slug, segments]) => {
+        console.log('seg', segments, slug)
         if (slug) {
-          return model.segment.getBySlug(slug)
+          return _.find(segments?.nodes, { slug })
+        // HACK: this is for upchieve - there should be a better way to have
+        // partners / roles that don't have access to the 'all' segment
+        } else if (segments?.nodes.length === 1 || segments?.nodes.length === 2) {
+          console.log('gooo', segments?.nodes[0])
+          return segments?.nodes[0]
         } else {
-          return Rx.of(null)
+          return null
         }
       })
     )
