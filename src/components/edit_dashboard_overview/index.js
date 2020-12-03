@@ -12,7 +12,7 @@ if (typeof window !== 'undefined' && window !== null) {
 }
 
 export default function $editDashboardOverview ({ dashboardStream, onSave }) {
-  const { lang, model } = useContext(context)
+  const { lang, model, router } = useContext(context)
 
   const { nameStreams } = useMemo(() => {
     const nameStreams = new Rx.ReplaySubject(1)
@@ -38,6 +38,13 @@ export default function $editDashboardOverview ({ dashboardStream, onSave }) {
     onSave?.()
   }
 
+  const deleteDashboard = async () => {
+    if (confirm(lang.get('general.areYouSure'))) {
+      await model.dashboard.deleteById(dashboard.id)
+      router.go('orgHome')
+    }
+  }
+
   return z('.z-edit-dashboard-overview', [
     z('.input', [
       z('.label', lang.get('general.name')),
@@ -47,7 +54,13 @@ export default function $editDashboardOverview ({ dashboardStream, onSave }) {
         type: 'text'
       })
     ]),
-    z('.save', [
+    z('.actions', [
+      dashboard && z($button, {
+        text: lang.get('general.delete'),
+        onclick: deleteDashboard,
+        shouldHandleLoading: true,
+        isFullWidth: false
+      }),
       z($button, {
         text: lang.get('general.save'),
         isPrimary: true,

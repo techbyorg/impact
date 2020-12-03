@@ -54,4 +54,16 @@ export default class Block {
       pull: 'block'
     }, { invalidateAll: true })
   }
+
+  deleteById = (id) => {
+    return this.auth.call({
+      query: `
+        mutation BlockDeleteById($id: ID) {
+          blockDeleteById(id: $id)
+        }
+`,
+      variables: { id },
+      pull: 'blockDeleteById'
+    }, { invalidateAll: true })
+  }
 }

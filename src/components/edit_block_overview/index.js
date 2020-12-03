@@ -15,7 +15,7 @@ if (typeof window !== 'undefined' && window !== null) {
 
 export default function $editBlockOverview (props) {
   const { dashboardId, blockStream, onSave } = props
-  const { lang, model } = useContext(context)
+  const { lang, model, router } = useContext(context)
 
   const {
     nameStreams, metricStreams, metricsStream, typeStreams
@@ -58,6 +58,13 @@ export default function $editBlockOverview (props) {
     type: typeStreams.pipe(rx.switchAll())
   }))
 
+  const deleteBlock = async () => {
+    if (confirm(lang.get('general.areYouSure'))) {
+      await model.block.deleteById(block.id)
+      router.back()
+    }
+  }
+
   const createBlock = async () => {
     const diff = {
       id: block?.id,
@@ -96,12 +103,19 @@ export default function $editBlockOverview (props) {
         value: id, text: name
       }))
     })),
-    z('.save', [
+    z('.actions', [
+      block && z($button, {
+        text: lang.get('general.delete'),
+        onclick: deleteBlock,
+        shouldHandleLoading: true,
+        isFullWidth: false
+      }),
       z($button, {
         text: lang.get('general.save'),
         isPrimary: true,
         onclick: createBlock,
-        shouldHandleLoading: true
+        shouldHandleLoading: true,
+        isFullWidth: false
       })
     ])
   ])

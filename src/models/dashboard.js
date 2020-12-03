@@ -118,4 +118,16 @@ export default class Dashboard {
       pull: 'dashboard'
     }, { invalidateAll: true })
   }
+
+  deleteById = (id) => {
+    return this.auth.call({
+      query: `
+        mutation DashboardDeleteById($id: ID) {
+          dashboardDeleteById(id: $id)
+        }
+`,
+      variables: { id },
+      pull: 'dashboardDeleteById'
+    }, { invalidateAll: true })
+  }
 }
