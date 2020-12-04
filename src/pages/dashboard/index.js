@@ -50,13 +50,11 @@ export default function $dashboardPage ({ requestsStream }) {
       segmentsStream
     ).pipe(
       rx.map(([slug, segments]) => {
-        console.log('seg', segments, slug)
         if (slug) {
           return _.find(segments?.nodes, { slug })
         // HACK: this is for upchieve - there should be a better way to have
         // partners / roles that don't have access to the 'all' segment
         } else if (segments?.nodes.length === 1 || segments?.nodes.length === 2) {
-          console.log('gooo', segments?.nodes[0])
           return segments?.nodes[0]
         } else {
           return null

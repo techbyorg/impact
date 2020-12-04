@@ -5,6 +5,7 @@ import * as _ from 'lodash-es'
 
 import $button from 'frontend-shared/components/button'
 import $dropdown from 'frontend-shared/components/dropdown'
+import $dropdownMultiple from 'frontend-shared/components/dropdown_multiple'
 import $input from 'frontend-shared/components/input'
 
 import context from '../../context'
@@ -18,7 +19,8 @@ export default function $editBlockOverview (props) {
   const { lang, model, router } = useContext(context)
 
   const {
-    nameStreams, metricStreams, metricsStream, typeStreams
+    nameStreams, selectedMetricIdsStreams, typeStreams,
+    optionsStream
   } = useMemo(() => {
     const nameStreams = new Rx.ReplaySubject(1)
     nameStreams.next(blockStream.pipe(
@@ -34,27 +36,34 @@ export default function $editBlockOverview (props) {
       rx.map(({ nodes }) => nodes)
     )
     const blockAndMetricsStream = Rx.combineLatest(blockStream, metricsStream)
-    const metricStreams = new Rx.ReplaySubject(1)
-    metricStreams.next(blockAndMetricsStream.pipe(
-      rx.map(([block, metrics]) => block?.metricIds[0].id || metrics?.[0]?.id)
+    const selectedMetricIdsStreams = new Rx.ReplaySubject(1)
+    selectedMetricIdsStreams.next(blockAndMetricsStream.pipe(
+      rx.map(([block, metrics]) =>
+        block ? _.map(block?.metricIds, 'id') : [metrics?.[0]?.id]
+      )
     ))
+
+    const optionsStream = metricsStream.pipe(
+      rx.map((metrics) => _.map(metrics, ({ id, name }) => ({
+        value: id, text: name
+      })))
+    )
 
     return {
       blockStream,
       nameStreams,
-      metricStreams,
-      metricsStream,
-      typeStreams
+      selectedMetricIdsStreams,
+      typeStreams,
+      optionsStream
     }
   }, [])
 
   const {
-    block, name, metric, metrics, type
+    block, name, selectedMetricIds, type
   } = useStream(() => ({
     block: blockStream,
     name: nameStreams.pipe(rx.switchAll()),
-    metric: metricStreams.pipe(rx.switchAll()),
-    metrics: metricsStream,
+    selectedMetricIds: selectedMetricIdsStreams.pipe(rx.switchAll()),
     type: typeStreams.pipe(rx.switchAll())
   }))
 
@@ -70,7 +79,7 @@ export default function $editBlockOverview (props) {
       id: block?.id,
       dashboardId: dashboardId,
       name: name,
-      metricIds: [{ id: metric }],
+      metricIds: _.map(_.filter(selectedMetricIds), (id) => ({ id })),
       settings: { type }
     }
     if (dashboardId) {
@@ -93,15 +102,14 @@ export default function $editBlockOverview (props) {
       options: [
         { value: 'line', text: lang.get('blockType.line') },
         { value: 'bar', text: lang.get('blockType.bar') },
-        { value: 'pie', text: lang.get('blockType.pie') }
+        { value: 'pie', text: lang.get('blockType.pie') },
+        { value: 'overview', text: lang.get('blockType.overview') }
       ]
     })),
-    z('.input', z($dropdown, {
-      valueStreams: metricStreams,
+    z('.input', z($dropdownMultiple, {
+      valuesStreams: selectedMetricIdsStreams,
       isFullWidth: true,
-      options: _.map(metrics, ({ id, name }) => ({
-        value: id, text: name
-      }))
+      optionsStream
     })),
     z('.actions', [
       block && z($button, {
