@@ -7,6 +7,7 @@ import $button from 'frontend-shared/components/button'
 import $dialog from 'frontend-shared/components/dialog'
 import $dropdown from 'frontend-shared/components/dropdown'
 import $permissionToggle from 'frontend-shared/components/permission_toggle'
+import { streams } from 'frontend-shared/services/obs'
 
 import context from '../../context'
 
@@ -47,13 +48,12 @@ export default function $newDashboardDialog ({ dashboardIdStream, onClose }) {
       )
     )
 
-    const selectedRoleIdStreams = new Rx.ReplaySubject(1)
-    selectedRoleIdStreams.next(dashboardRolesStream.pipe(
+    const selectedRoleIdStreams = streams(dashboardRolesStream.pipe(
       rx.map((dashboardRoles) => dashboardRoles?.[0]?.id)
     ))
 
     const allDashboardPermissionsAndSelectedRoleId = Rx.combineLatest(
-      allDashboardPermissionsStream, selectedRoleIdStreams.pipe(rx.switchAll())
+      allDashboardPermissionsStream, selectedRoleIdStreams.stream
     )
 
     const dashboardPermissionsStream = allDashboardPermissionsAndSelectedRoleId.pipe(
@@ -99,7 +99,7 @@ export default function $newDashboardDialog ({ dashboardIdStream, onClose }) {
     dashboardPermissions: dashboardPermissionsStream,
     dashboardId: dashboardIdStream,
     selectedAddRoleId: selectedAddRoleIdStream,
-    selectedRoleId: selectedRoleIdStreams.pipe(rx.switchAll())
+    selectedRoleId: selectedRoleIdStreams.stream
   }))
 
   const addRole = () => {

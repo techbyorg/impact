@@ -7,6 +7,7 @@ import $button from 'frontend-shared/components/button'
 import $dropdown from 'frontend-shared/components/dropdown'
 import $dropdownMultiple from 'frontend-shared/components/dropdown_multiple'
 import $input from 'frontend-shared/components/input'
+import { streams } from 'frontend-shared/services/obs'
 
 import context from '../../context'
 
@@ -22,13 +23,11 @@ export default function $editBlockOverview (props) {
     nameStreams, selectedMetricIdsStreams, typeStreams,
     optionsStream
   } = useMemo(() => {
-    const nameStreams = new Rx.ReplaySubject(1)
-    nameStreams.next(blockStream.pipe(
+    const nameStreams = streams(blockStream.pipe(
       rx.map((block) => block?.name || '')
     ))
 
-    const typeStreams = new Rx.ReplaySubject(1)
-    typeStreams.next(blockStream.pipe(
+    const typeStreams = streams(blockStream.pipe(
       rx.map((block) => block?.settings?.type || '')
     ))
 
@@ -36,8 +35,7 @@ export default function $editBlockOverview (props) {
       rx.map(({ nodes }) => nodes)
     )
     const blockAndMetricsStream = Rx.combineLatest(blockStream, metricsStream)
-    const selectedMetricIdsStreams = new Rx.ReplaySubject(1)
-    selectedMetricIdsStreams.next(blockAndMetricsStream.pipe(
+    const selectedMetricIdsStreams = streams(blockAndMetricsStream.pipe(
       rx.map(([block, metrics]) =>
         block ? _.map(block?.metricIds, 'id') : [metrics?.[0]?.id]
       )
@@ -62,9 +60,9 @@ export default function $editBlockOverview (props) {
     block, name, selectedMetricIds, type
   } = useStream(() => ({
     block: blockStream,
-    name: nameStreams.pipe(rx.switchAll()),
-    selectedMetricIds: selectedMetricIdsStreams.pipe(rx.switchAll()),
-    type: typeStreams.pipe(rx.switchAll())
+    name: nameStreams.stream,
+    selectedMetricIds: selectedMetricIdsStreams.stream,
+    type: typeStreams.stream
   }))
 
   const deleteBlock = async () => {

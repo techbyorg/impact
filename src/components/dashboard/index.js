@@ -35,9 +35,6 @@ export default function $home (props) {
     isNewBlockDialogVisibleStream, editingBlockIdStream,
     isNewDashboardDialogVisibleStream
   } = useMemo(() => {
-    const segmentStreams = new Rx.ReplaySubject(1)
-    segmentStreams.next(segmentStream)
-
     let isFirstPresetDateRange = true
     const initialPresetDateRange = cookie.get('presetDateRange') || 'last6Months'
     const presetDateRangeStream = new Rx.BehaviorSubject(initialPresetDateRange)
@@ -98,8 +95,8 @@ export default function $home (props) {
     startDate, endDate, isMenuVisible, isLoading, dashboard,
     org, pinnedBlock, timeScale
   } = useStream(() => ({
-    startDate: startDateStreams.pipe(rx.switchAll()),
-    endDate: startDateStreams.pipe(rx.switchAll()),
+    startDate: startDateStreams.stream,
+    endDate: startDateStreams.stream,
     isMenuVisible: isMenuVisibleStream,
     isLoading: isLoadingStream,
     dashboard: dashboardStream,

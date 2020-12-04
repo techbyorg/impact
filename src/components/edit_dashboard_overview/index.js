@@ -1,9 +1,9 @@
 import { z, useContext, useMemo, useStream } from 'zorium'
-import * as Rx from 'rxjs'
 import * as rx from 'rxjs/operators'
 
 import $button from 'frontend-shared/components/button'
 import $input from 'frontend-shared/components/input'
+import { streams } from 'frontend-shared/services/obs'
 
 import context from '../../context'
 
@@ -15,8 +15,7 @@ export default function $editDashboardOverview ({ dashboardStream, onSave }) {
   const { lang, model, router } = useContext(context)
 
   const { nameStreams } = useMemo(() => {
-    const nameStreams = new Rx.ReplaySubject(1)
-    nameStreams.next(
+    const nameStreams = streams(
       dashboardStream.pipe(rx.map((dashboard) => dashboard?.name || ''))
     )
 
@@ -27,7 +26,7 @@ export default function $editDashboardOverview ({ dashboardStream, onSave }) {
 
   const { dashboard, name } = useStream(() => ({
     dashboard: dashboardStream,
-    name: nameStreams.pipe(rx.switchAll())
+    name: nameStreams.stream
   }))
 
   const createDashboard = async () => {

@@ -8,6 +8,7 @@ import useMeta from 'frontend-shared/services/use_meta'
 import useCssVariables from 'frontend-shared/services/use_css_variables'
 import $appBar from 'frontend-shared/components/app_bar'
 import $appBarUserMenu from 'frontend-shared/components/app_bar_user_menu'
+import { streams } from 'frontend-shared/services/obs'
 
 import $dashboard from '../../components/dashboard'
 import context from '../../context'
@@ -71,15 +72,13 @@ export default function $dashboardPage ({ requestsStream }) {
     )
 
     // TODO: get from url
-    const startDateStreams = new Rx.ReplaySubject(1)
-    startDateStreams.next(
+    const startDateStreams = streams(
       Rx.of(
         cookie.get('startDate') ||
           DateService.format(presetDates.startDate, 'yyyy-mm-dd')
       )
     )
-    const endDateStreams = new Rx.ReplaySubject(1)
-    endDateStreams.next(
+    const endDateStreams = streams(
       Rx.of(
         cookie.get('endDate') ||
           DateService.format(presetDates.endDate, 'yyyy-mm-dd')
@@ -89,8 +88,8 @@ export default function $dashboardPage ({ requestsStream }) {
     const extrasStream = Rx.combineLatest(
       dashboardSlugStream,
       segmentStream,
-      startDateStreams.pipe(rx.switchAll()),
-      endDateStreams.pipe(rx.switchAll()),
+      startDateStreams.stream,
+      endDateStreams.stream,
       timeScaleStream
     ).pipe(rx.debounceTime(DATE_DEBOUNCE_TIME_MS))
 
