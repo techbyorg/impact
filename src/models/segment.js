@@ -28,4 +28,22 @@ export default class Segment {
       pull: 'segments'
     })
   }
+
+  upsert = ({ id, slug, name }) => {
+    return this.auth.call({
+      query: `
+        mutation SegmentUpsert(
+          $id: ID
+          $slug: String
+          $name: String
+        ) {
+          segmentUpsert(id: $id, slug: $slug, name: $name) {
+            slug
+          }
+        }
+`,
+      variables: { id, slug, name },
+      pull: 'segment'
+    }, { invalidateAll: true })
+  }
 }

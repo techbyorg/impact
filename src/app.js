@@ -9,7 +9,7 @@ import $editBlockPage from './pages/edit_block'
 import $editDashboardPage from './pages/edit_dashboard'
 import $homePage from './pages/home'
 import $signInPage from 'frontend-shared/pages/sign_in'
-import $settingsPage from 'frontend-shared/pages/settings'
+import $settingsPage from './pages/settings'
 import $shellPage from './pages/shell'
 import $404Page from './pages/404'
 
