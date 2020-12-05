@@ -53,6 +53,11 @@ export default function $segments () {
             name: 'New segment'
           })
         },
+        onDelete: (id) => {
+          if (confirm(lang.get('general.areYouSure'))) {
+            model.segment.deleteById(id)
+          }
+        },
         currentMenuItemStream,
         menuItems
       })

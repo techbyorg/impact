@@ -46,4 +46,16 @@ export default class Segment {
       pull: 'segment'
     }, { invalidateAll: true })
   }
+
+  deleteById = (id) => {
+    return this.auth.call({
+      query: `
+        mutation SegmentDeleteById($id: ID) {
+          segmentDeleteById(id: $id)
+        }
+`,
+      variables: { id },
+      pull: 'segmentDeleteById'
+    }, { invalidateAll: true })
+  }
 }

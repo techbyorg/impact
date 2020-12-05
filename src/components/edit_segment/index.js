@@ -28,12 +28,6 @@ export default function $editSegment ({ segmentStreams }) {
     segment: segmentStream
   }))
 
-  const del = () => {
-    if (confirm(lang.get('general.areYouSure'))) {
-      return model.segment.deleteById(segment.id)
-    }
-  }
-
   const save = () => {
     return model.segment.upsert({ id: segment.id, slug: slug })
   }
@@ -49,12 +43,6 @@ export default function $editSegment ({ segmentStreams }) {
       })
     ]),
     z('.actions', [
-      segment?.slug && !['everyone', 'admin'].includes(segment.slug) && z($button, {
-        onclick: del,
-        text: lang.get('general.delete'),
-        isFullWidth: false,
-        shouldHandleLoading: true
-      }),
       z($button, {
         onclick: save,
         isPrimary: true,
