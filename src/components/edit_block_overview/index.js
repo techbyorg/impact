@@ -8,7 +8,9 @@ import $dropdown from 'frontend-shared/components/dropdown'
 import $dropdownMultiple from 'frontend-shared/components/dropdown_multiple'
 import $input from 'frontend-shared/components/input'
 import { streams } from 'frontend-shared/services/obs'
+import DateService from 'frontend-shared/services/date'
 
+import $block from '../block'
 import context from '../../context'
 
 if (typeof window !== 'undefined' && window !== null) {
@@ -20,7 +22,7 @@ export default function $editBlockOverview (props) {
   const { lang, model, router } = useContext(context)
 
   const {
-    nameStreams, selectedMetricIdsStreams, typeStreams,
+    nameStreams, selectedMetricIdsStreams, typeStreams, previewBlockStream,
     optionsStream
   } = useMemo(() => {
     const nameStreams = streams(blockStream.pipe(
@@ -41,6 +43,24 @@ export default function $editBlockOverview (props) {
       )
     ))
 
+    const previewBlockStream = Rx.combineLatest(
+      blockStream,
+      typeStreams.stream,
+      selectedMetricIdsStreams.stream
+    ).pipe(
+      rx.switchMap(([block, type, metricIds]) => {
+        console.log('get pb', block, type, _.map(metricIds, (id) => ({ id })))
+        const presetDates = DateService.getDatesFromPresetDateRange('30days')
+        return model.block.getByIdWithDatapoints(block.id, {
+          type,
+          metricIds: _.map(metricIds, (id) => ({ id })),
+          timeScale: 'day',
+          startDate: DateService.format(presetDates.startDate, 'yyyy-mm-dd'),
+          endDate: DateService.format(presetDates.endDate, 'yyyy-mm-dd')
+        })
+      })
+    )
+
     const optionsStream = metricsStream.pipe(
       rx.map((metrics) => _.map(metrics, ({ id, name }) => ({
         value: id, text: name
@@ -49,6 +69,7 @@ export default function $editBlockOverview (props) {
 
     return {
       blockStream,
+      previewBlockStream,
       nameStreams,
       selectedMetricIdsStreams,
       typeStreams,
@@ -57,13 +78,16 @@ export default function $editBlockOverview (props) {
   }, [])
 
   const {
-    block, name, selectedMetricIds, type
+    block, previewBlock, name, selectedMetricIds, type
   } = useStream(() => ({
     block: blockStream,
+    previewBlock: previewBlockStream,
     name: nameStreams.stream,
     selectedMetricIds: selectedMetricIdsStreams.stream,
     type: typeStreams.stream
   }))
+
+  console.log('pb', previewBlock)
 
   const deleteBlock = async () => {
     if (confirm(lang.get('general.areYouSure'))) {
@@ -87,6 +111,8 @@ export default function $editBlockOverview (props) {
     onSave?.()
   }
 
+  console.log('block', block)
+
   return z('.z-edit-block-overview', [
     z('.input', z($input, {
       valueStreams: nameStreams,
@@ -109,6 +135,13 @@ export default function $editBlockOverview (props) {
       isFullWidth: true,
       optionsStream
     })),
+    z('.preview', [
+      previewBlock && z($block, {
+        timeScale: 'week',
+        block: _.defaultsDeep({ name }, previewBlock)
+        // colors: [colors.getRawColor(colors.$primaryMain)].concat(gColors)
+      })
+    ]),
     z('.actions', [
       block && z($button, {
         text: lang.get('general.delete'),

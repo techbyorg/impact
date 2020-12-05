@@ -5,7 +5,6 @@ import $appBar from 'frontend-shared/components/app_bar'
 import $appBarUserMenu from 'frontend-shared/components/app_bar_user_menu'
 
 import $editBlock from '../../components/edit_block'
-
 import context from '../../context'
 
 if (typeof window !== 'undefined') { require('./index.styl') }

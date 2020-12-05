@@ -1,3 +1,5 @@
+import { FRAGMENT_BLOCK_WITH_DATAPOINTS } from 'all-shared/index.js'
+
 export default class Block {
   constructor ({ auth }) {
     this.auth = auth
@@ -31,6 +33,28 @@ export default class Block {
           }
         }`,
       variables: { id },
+      pull: 'block'
+    })
+  }
+
+  getByIdWithDatapoints = (id, { segmentId, startDate, endDate, timeScale, type, metricIds } = {}) => {
+    console.log('get with', type, metricIds)
+    return this.auth.stream({
+      query: `
+        query BlockByIdWithDatapoints(
+          $id: ID!
+          $segmentId: ID
+          $startDate: String
+          $endDate: String
+          $timeScale: String
+          $type: String
+          $metricIds: [JSON]
+        ) {
+          block(id: $id, type: $type, metricIds: $metricIds) {
+            ...blockWithDatapoints
+          }
+        } ${FRAGMENT_BLOCK_WITH_DATAPOINTS}`,
+      variables: { id, startDate, endDate, timeScale, type, metricIds },
       pull: 'block'
     })
   }

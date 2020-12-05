@@ -22,8 +22,6 @@ export default function $settingsPage ({ requestsStream }) {
     }
   }, [])
 
-  console.log('set', $segments)
-
   const additionalTabs = [
     {
       menuItem: 'segments',

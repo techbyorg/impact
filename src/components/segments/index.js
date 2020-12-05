@@ -46,7 +46,6 @@ export default function $segments () {
     z('.sidebar', [
       z($sidebarMenu, {
         title: lang.get('general.segments'),
-        isDraggable: true,
         onReorder: (ids) => model.segment.setPriorities(ids),
         onAdd: () => {
           return model.segment.upsert({

@@ -36,8 +36,6 @@ export default function $editBlock ({ currentTabStream, blockStream }) {
     }
   }
 
-  console.log('tabs', tabs, block)
-
   return z('.z-edit-block',
     z($sourceSettings, {
       title: block?.name,
