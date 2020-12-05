@@ -103,6 +103,7 @@ export default function $dashboardPage ({ requestsStream }) {
       startDateStreams,
       endDateStreams,
       timeScaleStream,
+      isLoadingStream,
       dashboardStream: extrasStream.pipe(
         rx.filter(([dashboardSlug, segment, startDate, endDate]) =>
           startDate && endDate
