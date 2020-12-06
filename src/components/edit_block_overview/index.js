@@ -49,15 +49,14 @@ export default function $editBlockOverview (props) {
       selectedMetricIdsStreams.stream
     ).pipe(
       rx.switchMap(([block, type, metricIds]) => {
-        console.log('get pb', block, type, _.map(metricIds, (id) => ({ id })))
         const presetDates = DateService.getDatesFromPresetDateRange('30days')
-        return model.block.getByIdWithDatapoints(block.id, {
+        return block ? model.block.getByIdWithDatapoints(block.id, {
           type,
           metricIds: _.map(metricIds, (id) => ({ id })),
           timeScale: 'day',
           startDate: DateService.format(presetDates.startDate, 'yyyy-mm-dd'),
           endDate: DateService.format(presetDates.endDate, 'yyyy-mm-dd')
-        })
+        }) : Rx.of(null)
       })
     )
 
@@ -86,8 +85,6 @@ export default function $editBlockOverview (props) {
     selectedMetricIds: selectedMetricIdsStreams.stream,
     type: typeStreams.stream
   }))
-
-  console.log('pb', previewBlock)
 
   const deleteBlock = async () => {
     if (confirm(lang.get('general.areYouSure'))) {
