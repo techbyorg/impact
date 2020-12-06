@@ -1,3 +1,5 @@
+import { FRAGMENT_BLOCK_WITH_DATAPOINTS } from 'all-shared/index.js'
+
 export default class Dashboard {
   constructor ({ auth }) {
     this.auth = auth
@@ -21,36 +23,11 @@ export default class Dashboard {
             id, slug, name
             blocks {
               nodes {
-                id
-                name
-                settings
-                metrics {
-                  nodes {
-                    name
-                    unit
-                    dimensions {
-                      nodes {
-                        slug
-                        datapoints(
-                          segmentId: $segmentId
-                          startDate: $startDate
-                          endDate: $endDate
-                          timeScale: $timeScale
-                        ) {
-                          nodes {
-                            scaledTime
-                            dimensionValue
-                            count
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
+                ...blockWithDatapoints
               }
             }
           }
-        }`,
+        }  ${FRAGMENT_BLOCK_WITH_DATAPOINTS}`,
       variables: {
         slug, segmentId, startDate, endDate, timeScale
       },

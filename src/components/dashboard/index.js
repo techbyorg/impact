@@ -93,7 +93,7 @@ export default function $home (props) {
 
   const {
     startDate, endDate, isMenuVisible, isLoading, dashboard,
-    org, pinnedBlock, timeScale
+    org, pinnedBlock, earliestTime, timeScale
   } = useStream(() => ({
     startDate: startDateStreams.stream,
     endDate: startDateStreams.stream,
@@ -106,11 +106,23 @@ export default function $home (props) {
         _.find(dashboard?.blocks.nodes, ({ settings }) => settings?.isPinned)
       )
     ),
+    earliestTime: dashboardStream.pipe(
+      rx.map((dashboard) => {
+        const firstDatapointTimes = _.filter(_.flatten(
+          _.map(dashboard?.blocks?.nodes, (block) =>
+            _.map(block.metrics?.nodes, (metric) =>
+              metric.firstDatapointTime
+            )
+          )
+        ))
+        return _.min(firstDatapointTimes)
+      })
+    ),
     presetDateRange: presetDateRangeStream, // only sub'd for side-effect
     timeScale: timeScaleStream
   }))
 
-  console.log('org', org)
+  console.log('org', org, earliestTime)
 
   if (globalThis.window) {
     useEffect(() => {
@@ -188,7 +200,10 @@ export default function $home (props) {
           // select
           z('.date-range', [
             z($inputDateRange, {
-              startDateStreams, endDateStreams, presetDateRangeStream
+              startDateStreams,
+              endDateStreams,
+              presetDateRangeStream,
+              earliestTime
             })
           ]),
           z('.time-scale', [

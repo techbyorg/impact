@@ -40,15 +40,6 @@
   "frequencies.week": "Week",
   "frequencies.month": "Month",
 
-  "inputDateRange.today": "Today",
-  "inputDateRange.7days": "Last 7 days",
-  "inputDateRange.30days": "Last 30 days",
-  "inputDateRange.thisMonth": "This month",
-  "inputDateRange.lastMonth": "Last month",
-  "inputDateRange.last6Months": "Last 6 months",
-  "inputDateRange.last12Months": "Last 12 months",
-  "inputDateRange.thisYear": "This year",
-
   "homePage.title": "Impact",
   "homePage.description": "Nonprofit impact measured"
 }
