@@ -5,6 +5,7 @@ import $appBar from 'frontend-shared/components/app_bar'
 import $appBarUserMenu from 'frontend-shared/components/app_bar_user_menu'
 import $settings from 'frontend-shared/components/settings'
 
+import $metrics from '../../components/metrics'
 import $segments from '../../components/segments'
 
 import context from '../../context'
@@ -23,6 +24,12 @@ export default function $settingsPage ({ requestsStream }) {
   }, [])
 
   const additionalTabs = [
+    {
+      menuItem: 'metrics',
+      text: lang.get('general.metrics'),
+      path: router.get('orgSettingsWithTab', { tab: 'metrics' }),
+      $tab: $metrics
+    },
     {
       menuItem: 'segments',
       text: lang.get('general.segments'),

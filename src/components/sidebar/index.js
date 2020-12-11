@@ -57,7 +57,8 @@ export default function $home (props) {
       }, [
         z('.icon', z($icon, {
           icon: addIconPath,
-          color: colors.$bgText54
+          color: colors.$bgText54,
+          size: '16px'
         })),
         z('.text', lang.get('sidebar.addDashboard'))
       ])

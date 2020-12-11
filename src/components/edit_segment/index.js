@@ -45,8 +45,7 @@ export default function $editSegment ({ segmentStreams }) {
     z('.input', [
       z($input, {
         valueStreams: slugStreams,
-        placeholder: lang.get('editSegment.segmentName'),
-        disabled: segment?.slug === 'everyone'
+        placeholder: lang.get('editSegment.segmentName')
       })
     ]),
     isUnsaved && z($unsavedSnackBar, {
