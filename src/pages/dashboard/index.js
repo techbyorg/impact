@@ -130,20 +130,20 @@ export default function $dashboardPage ({ requestsStream }) {
     orgSlug: orgSlugStream
   }))
 
-  useMeta((org) => {
-    // TODO: non-hardcoded
-    // FIXME: org?.slug doesn't seem to be defined
-    if (org?.slug === 'upchieve' || router.getHost() === 'data.upchieve.org') {
-      return {
-        title: 'UPchieve Transparent Data',
-        description: 'UPchieve is an EdTech nonprofit providing on-demand STEM tutoring + college counseling to underserved HS students in the U.S.'
-      }
-    } else {
-      return {
-        title: 'Hack Club Transparent Data',
-        description: 'Hack Club is a global network of programming clubs where members learn to code through tinkering and building projects.'
-      }
+  useMeta(() => {
+    const meta = {
+      title: org?.name ? `${org?.name}'s Impact` : 'Impact'
     }
+    if (org?.slug === 'upchieve' || router.getHost() === 'data.upchieve.org') {
+      return _.defaults({
+        description: 'UPchieve is an EdTech nonprofit providing on-demand STEM tutoring + college counseling to underserved HS students in the U.S.'
+      }, meta)
+    } else if (org?.slug === 'hackclub' || router.getHost() === 'numberwang.hackclub.com') {
+      return _.defaults({
+        description: 'Hack Club is a global network of programming clubs where members learn to code through tinkering and building projects.'
+      }, meta)
+    }
+    return meta
   }, [org])
 
   useCssVariables(() => {

@@ -3,6 +3,7 @@
   "orgHome": "/org/:orgSlug",
   "orgDashboard": "/org/:orgSlug/dashboard/:dashboardSlug",
   "orgDashboardWithSegment": "/org/:orgSlug/dashboard/:dashboardSlug/segment/:segmentSlug",
+  "orgDonorDashboard": "/org/:orgSlug/donor-dashboard",
   "orgEditBlock": "/org/:orgSlug/block/:id/edit",
   "orgEditBlockWithTab": "/org/:orgSlug/block/:id/edit/:tab",
   "orgEditDashboard": "/org/:orgSlug/dashboard/:dashboardSlug/edit",

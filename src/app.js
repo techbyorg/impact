@@ -5,6 +5,7 @@ import $sharedApp from 'frontend-shared/app'
 import $privacyPage from 'frontend-shared/pages/privacy'
 
 import $dashboardPage from './pages/dashboard'
+import $donorDashboardPage from './pages/donor_dashboard'
 import $editBlockPage from './pages/edit_block'
 import $editDashboardPage from './pages/edit_dashboard'
 import $homePage from './pages/home'
@@ -22,6 +23,7 @@ export default function $app (props) {
       orgHome: $dashboardPage,
       orgDashboard: $dashboardPage,
       orgDashboardWithSegment: $dashboardPage,
+      orgDonorDashboard: $donorDashboardPage,
       orgEditBlock: $editBlockPage,
       orgEditBlockWithTab: $editBlockPage,
       orgEditDashboard: $editDashboardPage,

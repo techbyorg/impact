@@ -241,7 +241,10 @@ export default function $home (props) {
               desktop: 20
             },
             $elements: _.filter(_.map(blocks, (block) => {
-              if (!block.settings.isPinned) {
+              const isCumulative = [ // HACK for upchieve
+                'cumulative-sessions', 'cumulative-students'
+              ].includes(block.slug)
+              if (!block.settings.isPinned && (!isCumulative || timeScale !== 'month')) {
                 return z('.block', [
                   z($block, {
                     timeScale,
