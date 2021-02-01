@@ -13,7 +13,6 @@ export default class Dashboard {
       query: `
         query DashboardBySlugWithBlocks(
           $slug: String
-          # $dashboardId: ID!
           $segmentId: ID
           $startDate: String
           $endDate: String
